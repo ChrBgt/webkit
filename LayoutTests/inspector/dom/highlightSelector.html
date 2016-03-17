@@ -1,0 +1,104 @@
+<html>
+<head>
+<script type="text/javascript" src="../../http/tests/inspector/resources/inspector-test.js"></script>
+<script>
+function test() {
+    var testcases = [
+        {'frameId': 'MAINFRAME', 'selector': 'div'},
+        {'frameId': 'MAINFRAME', 'selector': '.class-one'},
+        {'frameId': 'MAINFRAME', 'selector': '#id-one'},
+        {'frameId': 'MAINFRAME', 'selector': '.class-one, .class-two'},
+        {'selector': 'iframe.class-one'}, // No frame ID.
+        {'frameId': 'x.x', 'selector': 'div', "error": true}, // Non-existing frame ID.
+        {'frameId': 'MAINFRAME', 'selector': '.no-elements'}, // Non-matching selector.
+        {'frameId': 'MAINFRAME', 'selector': '$%foobar', "error": true}, // Invalid selector.
+        {'frameId': 'CHILDFRAME', 'selector': 'div'},
+        {'frameId': 'CHILDFRAME', 'selector': '#id-one'},
+    ];
+
+    InspectorTest.assert(WebInspector.frameResourceManager.mainFrame.childFrames.length === 1);
+    var mainFrameId = WebInspector.frameResourceManager.mainFrame.id;
+    var childFrameId = WebInspector.frameResourceManager.mainFrame.childFrames[0].id;
+    for (var test of testcases) {
+        if (test.frameId === "MAINFRAME")
+            test.frameId = mainFrameId;
+        else if (test.frameId === "CHILDFRAME")
+            test.frameId = childFrameId;
+    }
+
+    function displayNameForFrameId(frameId) {
+        if (frameId === mainFrameId)
+            return "<main-frame-id>";
+        if (frameId === childFrameId)
+            return "<child-frame-id>";
+        return frameId;
+    }
+
+    function getHighlightObjectForSelector(selector, frameId, errorExpected, callback) {
+        var highlightConfig = {
+            showInfo: true,
+            contentColor: {r: 255, g: 255, b: 255},
+            paddingColor: {r: 255, g: 255, b: 255},
+            borderColor: {r: 255, g: 255, b: 255},
+            marginColor: {r: 255, g: 255, b: 255},
+        };
+
+        DOMAgent.highlightSelector(highlightConfig, selector, frameId, highlightSelectorCallback);
+
+        function highlightSelectorCallback(error) {
+            if (errorExpected) {
+                InspectorTest.assert(error, "Missing expected error. Error: " + error);
+
+                if (error)
+                    InspectorTest.log("PASS: Expected error: " + error);
+
+                callback();
+                return;
+            } else
+                InspectorTest.assert(!error, "Error in callback for DOMAgent.highlightSelector: " + error);
+
+            InspectorTest.evaluateInPage("window.internals.inspectorHighlightObject()", receivedHighlightObject);
+        }
+
+        function receivedHighlightObject(error, payload, wasThrown) {
+            InspectorTest.assert(!error, "When evaluating code, received unexpected error:" + error);
+            InspectorTest.assert(!wasThrown, "When evaluating code, an exception was thrown:" + wasThrown);
+
+            var data = JSON.parse(payload.value);
+            callback(data);
+        }
+    }
+
+    function runNextTest(tests) {
+        var testcase = tests[0];
+
+        getHighlightObjectForSelector(testcase.selector, testcase.frameId, testcase.error, function(payload) {
+            InspectorTest.log("SELECTOR: " + testcase.selector);
+            InspectorTest.log("FRAMEID: " + displayNameForFrameId(testcase.frameId));
+
+            if (payload) {
+                InspectorTest.log("FOUND: " + payload.length);
+                InspectorTest.log(JSON.stringify(payload, null, 2));
+            }
+
+            InspectorTest.log("\n");
+        
+            if (tests.length > 1)
+                runNextTest(tests.splice(1));
+            else
+                InspectorTest.completeTest();
+        });
+    }
+
+    runNextTest(testcases);
+}
+</script>
+</head>
+<body onload="runTest()">
+    <div>
+        <div class="class-one"></div>
+        <div id="id-one" class="class-two"></div>
+        <iframe class="class-one" src="resources/highlightSelector-iframe.html"></iframe>
+    </div>
+</body>
+</html>
