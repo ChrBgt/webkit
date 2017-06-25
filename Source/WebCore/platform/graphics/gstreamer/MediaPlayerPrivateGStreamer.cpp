@@ -21,7 +21,6 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-
 #include "config.h"
 #include "MediaPlayerPrivateGStreamer.h"
 
@@ -69,12 +68,22 @@
 #include "AudioSourceProviderGStreamer.h"
 #endif
 
+//CHB test
+#define GST_INFO g_printerr
+#define GST_DEBUG g_printerr
+
+
 // Max interval in seconds to stay in the READY state on manual
 // state change requests.
 static const unsigned gReadyStateTimerInterval = 60;
 
 GST_DEBUG_CATEGORY_EXTERN(webkit_media_player_debug);
 #define GST_CAT_DEFAULT webkit_media_player_debug
+
+//CHB testing
+//#define LOG_MEDIA_MESSAGE(...) g_printerr("CHB     " __VA_ARGS__);g_printerr("\n")
+//#define INFO_MEDIA_MESSAGE(...) g_printerr("CHBinfo " __VA_ARGS__);g_printerr("\n")
+//eof CHB testing
 
 using namespace std;
 
@@ -149,14 +158,14 @@ bool initializeGStreamerAndRegisterWebKitElements()
     if (!initializeGStreamer())
         return false;
 
-    GRefPtr<GstElementFactory> srcFactory = adoptGRef(gst_element_factory_find("webkitwebsrc"));
+    GRefPtr<GstElementFactory> srcFactory = gst_element_factory_find("webkitwebsrc");
     if (!srcFactory) {
         GST_DEBUG_CATEGORY_INIT(webkit_media_player_debug, "webkitmediaplayer", 0, "WebKit media player");
         gst_element_register(0, "webkitwebsrc", GST_RANK_PRIMARY + 100, WEBKIT_TYPE_WEB_SRC);
     }
 
 #if ENABLE(MEDIA_SOURCE)
-    GRefPtr<GstElementFactory> WebKitMediaSrcFactory = adoptGRef(gst_element_factory_find("webkitmediasrc"));
+    GRefPtr<GstElementFactory> WebKitMediaSrcFactory = gst_element_factory_find("webkitmediasrc");
     if (!WebKitMediaSrcFactory)
         gst_element_register(0, "webkitmediasrc", GST_RANK_PRIMARY + 100, WEBKIT_TYPE_MEDIA_SRC);
 #endif
@@ -168,7 +177,7 @@ bool MediaPlayerPrivateGStreamer::isAvailable()
     if (!initializeGStreamerAndRegisterWebKitElements())
         return false;
 
-    GRefPtr<GstElementFactory> factory = adoptGRef(gst_element_factory_find("playbin"));
+    GRefPtr<GstElementFactory> factory = gst_element_factory_find("playbin");
     return factory;
 }
 
@@ -258,7 +267,14 @@ MediaPlayerPrivateGStreamer::~MediaPlayerPrivateGStreamer()
         g_signal_handlers_disconnect_by_func(m_pipeline.get(), reinterpret_cast<gpointer>(mediaPlayerPrivateTextChangedCallback), this);
 #endif
 
-        gst_element_set_state(m_pipeline.get(), GST_STATE_NULL);
+    //CHB https://bugs.webkit.org/attachment.cgi?id=262759&action=diff        gst_element_set_state(m_pipeline.get(), GST_STATE_NULL);
+        GstState currentState;
+        GstState pending;
+        GstStateChangeReturn lastStateChange = gst_element_get_state(m_pipeline.get(), &currentState, &pending, 0);
+        // On WinCairo, gst_element_set_state can block forever if the last state change has failed.
+	    if (lastStateChange != GST_STATE_CHANGE_FAILURE)
+            gst_element_set_state(m_pipeline.get(), GST_STATE_NULL);
+	//eof CHB
     }
 
     if (m_videoSink) {
@@ -443,7 +459,9 @@ void MediaPlayerPrivateGStreamer::pause()
         return;
 
     if (changePipelineState(GST_STATE_PAUSED))
+{//CHB testing
         INFO_MEDIA_MESSAGE("Pause");
+}//CHB testing
     else
         loadingFailed(MediaPlayer::Empty);
 }
@@ -1768,7 +1786,7 @@ static HashSet<String> mimeTypeCache()
         "video/flv",
         "video/mj2",
         "video/mp2t",
-        "video/mp4",
+        "video/mp4",  //CHB remove? https://bugs.webkit.org/show_bug.cgi?id=135972
         "video/mpeg",
         "video/mpegts",
         "video/ogg",
@@ -1794,7 +1812,10 @@ static HashSet<String> mimeTypeCache()
 
     for (unsigned i = 0; i < (sizeof(mimeTypes) / sizeof(*mimeTypes)); ++i)
         cache.add(String(mimeTypes[i]));
-
+/*CHB https://bugs.webkit.org/show_bug.cgi?id=135972  TODO fix properly ...
+    if (gstRegistryHasDecoder(String::fromUTF8("video/x-h264")))
+       cache.add(String::fromUTF8("video/mp4"));
+//eof CHB*/
     typeListInitialized = true;
     return cache;
 }
@@ -1857,13 +1878,30 @@ void MediaPlayerPrivateGStreamer::setPreload(MediaPlayer::Preload preload)
 
 GstElement* MediaPlayerPrivateGStreamer::createAudioSink()
 {
-    m_autoAudioSink = gst_element_factory_make("autoaudiosink", 0);
+    /*CHB
+    m_autoAudioSink = gst_element_factory_make("autoaudiosink", 0);*/
+	
+	// CHB testing
+    //m_autoAudioSink = gst_element_factory_make("fakesink", 0); //CHB
+    //g_object_set (m_autoAudioSink.get(), "dump", TRUE, NULL);//CHB
+	
+    /*CHB*/
+    GstElement* gstidentity = gst_element_factory_make("identity", 0);
+    g_object_set (gstidentity, "sync", TRUE, NULL);
+    m_autoAudioSink = gst_element_factory_make("filesink", 0);
+    g_object_set (m_autoAudioSink.get(), "location", "/dev/stdout", NULL);
+    //g_object_set (m_autoAudioSink.get(), "location", "/opt/gtk/gtk+-3.14.8/gdk/broadway/cbpipe3", NULL);
+    g_object_set (m_autoAudioSink.get(), "append", TRUE, NULL);
+    //g_object_set (m_autoAudioSink.get(), "sync", TRUE, NULL);  doesnt change anything
+    g_object_set (m_autoAudioSink.get(), "async", FALSE, NULL);
+    /*eof CHB*/
+
     if (!m_autoAudioSink) {
         WARN_MEDIA_MESSAGE("GStreamer's autoaudiosink not found. Please check your gst-plugins-good installation");
         return nullptr;
     }
 
-    g_signal_connect(m_autoAudioSink.get(), "child-added", G_CALLBACK(setAudioStreamPropertiesCallback), this);
+    //g_signal_connect(m_autoAudioSink.get(), "child-added", G_CALLBACK(setAudioStreamPropertiesCallback), this);   CHB
 
     GstElement* audioSinkBin;
 
@@ -1894,17 +1932,28 @@ GstElement* MediaPlayerPrivateGStreamer::createAudioSink()
 #if ENABLE(WEB_AUDIO)
         m_audioSourceProvider->configureAudioBin(audioSinkBin, scale);
 #else
+
         GstElement* convert = gst_element_factory_make("audioconvert", nullptr);
         GstElement* resample = gst_element_factory_make("audioresample", nullptr);
 
-        gst_bin_add_many(GST_BIN(audioSinkBin), convert, resample, m_autoAudioSink.get(), nullptr);
+        gst_bin_add_many(GST_BIN(audioSinkBin), gstidentity, convert, resample, m_autoAudioSink.get(), nullptr);
+                                                                      /*CHB gstidentity added */
 
-        if (!gst_element_link_many(scale, convert, resample, m_autoAudioSink.get(), nullptr)) {
+        if (!gst_element_link_many(gstidentity, scale, convert, resample, nullptr)) {
+                                                                      /*CHB gstidentity added, second last parameter m_autoAudioSink.get() goes extra */
             WARN_MEDIA_MESSAGE("Failed to link audio sink elements");
             gst_object_unref(audioSinkBin);
             return m_autoAudioSink.get();
         }
+		//CHB
+		GstCaps* caps = gst_caps_new_simple("audio/x-raw", "rate", G_TYPE_INT, 22050,
+                                            "channels", G_TYPE_INT, 2,
+                                            "format", G_TYPE_STRING, GST_AUDIO_NE(S32),
+                                            "layout", G_TYPE_STRING, "interleaved", nullptr);
+		 gst_element_link_pads_filtered(resample, m_autoAudioSink.get(), caps);
+		// eof CHB
 #endif
+
         return audioSinkBin;
     }
 
@@ -1932,13 +1981,20 @@ void MediaPlayerPrivateGStreamer::createGSTPlayBin()
     // we should not adopt.
     setPipeline(gst_element_factory_make("playbin", "play"));
     setStreamVolumeElement(GST_STREAM_VOLUME(m_pipeline.get()));
-
+	
     GRefPtr<GstBus> bus = adoptGRef(gst_pipeline_get_bus(GST_PIPELINE(m_pipeline.get())));
     gst_bus_add_signal_watch(bus.get());
     g_signal_connect(bus.get(), "message", G_CALLBACK(mediaPlayerPrivateMessageCallback), this);
 
     g_object_set(m_pipeline.get(), "mute", m_player->muted(), nullptr);
 
+    //CHB audio & video finishing, would also go without it but then show various problems with live streaming sources
+    if( !(m_player->client().mediaPlayerIsVideo()) )
+	    g_object_set (m_pipeline.get(), "ring-buffer-max-size", 4294967295, NULL);
+
+	g_object_set (m_pipeline.get(), "connection-speed", 1280, NULL);
+	//eof CHB
+	
     g_signal_connect(m_pipeline.get(), "notify::source", G_CALLBACK(mediaPlayerPrivateSourceChangedCallback), this);
     g_signal_connect(m_pipeline.get(), "video-changed", G_CALLBACK(mediaPlayerPrivateVideoChangedCallback), this);
     g_signal_connect(m_pipeline.get(), "audio-changed", G_CALLBACK(mediaPlayerPrivateAudioChangedCallback), this);

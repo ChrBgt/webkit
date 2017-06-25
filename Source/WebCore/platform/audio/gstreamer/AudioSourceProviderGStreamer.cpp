@@ -113,16 +113,40 @@ void AudioSourceProviderGStreamer::configureAudioBin(GstElement* audioBin, GstEl
     m_audioSinkBin = audioBin;
 
     GstElement* audioTee = gst_element_factory_make("tee", "audioTee");
-    GstElement* audioQueue = gst_element_factory_make("queue", 0);
+    GstElement* audioQueue = gst_element_factory_make("queue2", 0); //CHB queue2 instead of queue
     GstElement* audioConvert = gst_element_factory_make("audioconvert", 0);
     GstElement* audioConvert2 = gst_element_factory_make("audioconvert", 0);
     GstElement* audioResample = gst_element_factory_make("audioresample", 0);
     GstElement* audioResample2 = gst_element_factory_make("audioresample", 0);
     GstElement* volumeElement = gst_element_factory_make("volume", "volume");
-    GstElement* audioSink = gst_element_factory_make("autoaudiosink", 0);
+    //GstElement* audioSink = gst_element_factory_make("autoaudiosink", 0);  CHB
 
-    gst_bin_add_many(GST_BIN(m_audioSinkBin.get()), audioTee, audioQueue, audioConvert, audioResample, volumeElement, audioConvert2, audioResample2, audioSink, nullptr);
-
+	//CHB testing
+	//...gst_element_factory_make("fakesink", 0); //CHB
+	//g_object_set (audioSink, "dump", TRUE, NULL); //CHB	
+	
+    //CHB
+    GstElement* audioSink = gst_element_factory_make("filesink", 0);
+    GstElement* gstidentity = gst_element_factory_make("identity", 0);
+    g_object_set (gstidentity, "sync", TRUE, NULL);
+    g_object_set (audioSink, "location", "/dev/stdout", NULL);
+    //g_object_set (audioSink, "location", "/opt/gtk/gtk+-3.14.8/gdk/broadway/cbpipe3", NULL);
+    g_object_set (audioSink, "append", TRUE, NULL);
+    //g_object_set (audioSink, "sync", TRUE, NULL);  doesnt change anything
+    g_object_set (audioSink, "async", FALSE, NULL);
+    //eof CHB
+	
+    gst_bin_add_many(GST_BIN(m_audioSinkBin.get()), audioTee, audioQueue, gstidentity, audioConvert, audioResample, 
+	                 volumeElement, audioConvert2, audioResample2, audioSink, nullptr);
+																	//CHB gstidentity added
+    //CHB
+	GstCaps* caps = gst_caps_new_simple("audio/x-raw", "rate", G_TYPE_INT, 22050,
+                                        "channels", G_TYPE_INT, 2,
+                                        "format", G_TYPE_STRING, GST_AUDIO_NE(S32),
+                                        "layout", G_TYPE_STRING, "interleaved", nullptr);	
+	
+	//eof CHB
+																																																
     // In cases where the audio-sink needs elements before tee (such
     // as scaletempo) they need to be linked to tee which in this case
     // doesn't need a ghost pad. It is assumed that the teePredecessor
@@ -140,12 +164,15 @@ void AudioSourceProviderGStreamer::configureAudioBin(GstElement* audioBin, GstEl
     // autoaudiosink. The audioresample and audioconvert are needed to
     // ensure the audio sink receives buffers in the correct format.
     gst_element_link_pads_full(audioTee, "src_%u", audioQueue, "sink", GST_PAD_LINK_CHECK_NOTHING);
-    gst_element_link_pads_full(audioQueue, "src", audioConvert, "sink", GST_PAD_LINK_CHECK_NOTHING);
+    gst_element_link_pads_full(audioQueue, "src", gstidentity, "sink", GST_PAD_LINK_CHECK_NOTHING); //CHB
+    //gst_element_link_pads_full(audioQueue, "src", audioConvert, "sink", GST_PAD_LINK_CHECK_NOTHING); CHB
+    gst_element_link_pads_full(gstidentity, "src", audioConvert, "sink", GST_PAD_LINK_CHECK_NOTHING); //CHB
     gst_element_link_pads_full(audioConvert, "src", audioResample, "sink", GST_PAD_LINK_CHECK_NOTHING);
     gst_element_link_pads_full(audioResample, "src", volumeElement, "sink", GST_PAD_LINK_CHECK_NOTHING);
     gst_element_link_pads_full(volumeElement, "src", audioConvert2, "sink", GST_PAD_LINK_CHECK_NOTHING);
     gst_element_link_pads_full(audioConvert2, "src", audioResample2, "sink", GST_PAD_LINK_CHECK_NOTHING);
-    gst_element_link_pads_full(audioResample2, "src", audioSink, "sink", GST_PAD_LINK_CHECK_NOTHING);
+    //gst_element_link_pads_full(audioResample2, "src", audioSink, "sink", GST_PAD_LINK_CHECK_NOTHING); CHB
+    gst_element_link_pads_filtered(audioResample2, "src", audioSink, "sink", caps); // CHB	
 }
 
 void AudioSourceProviderGStreamer::provideInput(AudioBus* bus, size_t framesToProcess)

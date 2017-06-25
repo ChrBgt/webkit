@@ -97,7 +97,7 @@ struct _BrowserDownload {
     GtkWidget *statusLabel;
     GtkWidget *remainingLabel;
     GtkWidget *progressBar;
-    GtkWidget *actionButton;
+    //GtkWidget *actionButton;  CHB
 };
 
 struct _BrowserDownloadClass {
@@ -105,7 +105,7 @@ struct _BrowserDownloadClass {
 };
 
 G_DEFINE_TYPE(BrowserDownload, browser_download, GTK_TYPE_BOX)
-
+/*CHB
 static void actionButtonClicked(GtkButton *button, BrowserDownload *browserDownload)
 {
     if (!browserDownload->finished) {
@@ -118,7 +118,7 @@ static void actionButtonClicked(GtkButton *button, BrowserDownload *browserDownl
                  gtk_get_current_event_time(), NULL);
     gtk_widget_destroy(GTK_WIDGET(browserDownload));
 }
-
+*/
 static void browserDownloadFinalize(GObject *object)
 {
     BrowserDownload *browserDownload = BROWSER_DOWNLOAD(object);
@@ -146,6 +146,7 @@ static void browser_download_init(BrowserDownload *download)
     gtk_widget_show(statusBox);
 
     download->statusLabel = gtk_label_new("Starting Download");
+    gtk_label_set_max_width_chars(GTK_LABEL(download->statusLabel), 30);//CHB inserted   TODO 30 fits well for width=1000, should eventually depend on window width/(max char width in pixel)
     gtk_label_set_ellipsize(GTK_LABEL(download->statusLabel), PANGO_ELLIPSIZE_END);
     gtk_misc_set_alignment(GTK_MISC(download->statusLabel), 0., 0.5);
     gtk_box_pack_start(GTK_BOX(statusBox), download->statusLabel, TRUE, TRUE, 0);
@@ -160,10 +161,12 @@ static void browser_download_init(BrowserDownload *download)
     gtk_box_pack_start(GTK_BOX(vbox), download->progressBar, FALSE, FALSE, 0);
     gtk_widget_show(download->progressBar);
 
+	/*CHB
     download->actionButton = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
     g_signal_connect(download->actionButton, "clicked", G_CALLBACK(actionButtonClicked), download);
     gtk_box_pack_end(GTK_BOX(mainBox), download->actionButton, FALSE, FALSE, 0);
     gtk_widget_show(download->actionButton);
+	*/
 }
 
 static void browser_download_class_init(BrowserDownloadClass *klass)
@@ -178,6 +181,11 @@ static void downloadReceivedResponse(WebKitDownload *download, GParamSpec *param
     WebKitURIResponse *response = webkit_download_get_response(download);
     browserDownload->contentLength = webkit_uri_response_get_content_length(response);
     char *text = g_strdup_printf("Downloading %s", webkit_uri_response_get_uri(response));
+	//CHB
+	char *newdest = g_strdup_printf("file:///home/cb/downloads%s", strrchr(text, (int)('/')));
+	webkit_download_set_destination(download, newdest);
+	g_free(newdest);
+	//eof CHB
     gtk_label_set_text(GTK_LABEL(browserDownload->statusLabel), text);
     g_free(text);
 }
@@ -227,13 +235,17 @@ static void downloadReceivedData(WebKitDownload *download, guint64 dataLength, B
 
 static void downloadFinished(WebKitDownload *download, BrowserDownload *browserDownload)
 {
-    gchar *text = g_strdup_printf("Download completed: %s", webkit_download_get_destination(download));
+    gchar *text = g_strdup_printf("Download completed: %s", webkit_download_get_destination(download)
+	+ strlen("file:///home/cb/") //CHB added
+	);
     gtk_label_set_text(GTK_LABEL(browserDownload->statusLabel), text);
     g_free(text);
     gtk_label_set_text(GTK_LABEL(browserDownload->remainingLabel), NULL);
+	/*CHB
     gtk_button_set_image(GTK_BUTTON(browserDownload->actionButton),
                          gtk_image_new_from_stock(GTK_STOCK_OPEN, GTK_ICON_SIZE_BUTTON));
     gtk_button_set_label(GTK_BUTTON(browserDownload->actionButton), "Open ...");
+	*/	
     browserDownload->finished = TRUE;
 }
 
@@ -249,22 +261,24 @@ static void downloadFailed(WebKitDownload *download, GError *error, BrowserDownl
     gtk_label_set_text(GTK_LABEL(browserDownload->statusLabel), errorMessage);
     g_free(errorMessage);
     gtk_label_set_text(GTK_LABEL(browserDownload->remainingLabel), NULL);
-    gtk_widget_set_sensitive(browserDownload->actionButton, FALSE);
+    //gtk_widget_set_sensitive(browserDownload->actionButton, FALSE); CHB
 }
 
 GtkWidget *browserDownloadNew(WebKitDownload *download)
-{
+{	
     BrowserDownload *browserDownload = BROWSER_DOWNLOAD(g_object_new(BROWSER_TYPE_DOWNLOAD,
                                                                      "orientation", GTK_ORIENTATION_VERTICAL,
                                                                      NULL));
 
     browserDownload->download = g_object_ref(download);
+
+	webkit_download_set_allow_overwrite(download, TRUE); //CHB added
+	
     g_signal_connect(browserDownload->download, "notify::response", G_CALLBACK(downloadReceivedResponse), browserDownload);
     g_signal_connect(browserDownload->download, "notify::estimated-progress", G_CALLBACK(downloadProgress), browserDownload);
     g_signal_connect(browserDownload->download, "received-data", G_CALLBACK(downloadReceivedData), browserDownload);
     g_signal_connect(browserDownload->download, "finished", G_CALLBACK(downloadFinished), browserDownload);
     g_signal_connect(browserDownload->download, "failed", G_CALLBACK(downloadFailed), browserDownload);
-
     return GTK_WIDGET(browserDownload);
 }
 

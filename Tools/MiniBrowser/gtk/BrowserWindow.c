@@ -356,6 +356,13 @@ static gboolean webViewLeaveFullScreen(WebKitWebView *webView, BrowserWindow *wi
 
 static GtkWidget *webViewCreate(WebKitWebView *webView, WebKitNavigationAction *navigation, BrowserWindow *window)
 {
+	//CHB never open new window, remain in main window
+	char *externalURI = getExternalURI(webkit_web_view_get_uri(webView));
+    gtk_entry_set_text(GTK_ENTRY(window->uriEntry), externalURI);
+    g_free(externalURI);
+	return GTK_WIDGET(webView);
+	//eof CHB
+	/* CHB
     WebKitWebView *newWebView = WEBKIT_WEB_VIEW(webkit_web_view_new_with_related_view(webView));
     webkit_web_view_set_settings(newWebView, webkit_web_view_get_settings(webView));
 
@@ -364,6 +371,7 @@ static GtkWidget *webViewCreate(WebKitWebView *webView, WebKitNavigationAction *
     g_signal_connect(newWebView, "run-as-modal", G_CALLBACK(webViewRunAsModal), newWindow);
     g_signal_connect(newWebView, "close", G_CALLBACK(webViewClose), newWindow);
     return GTK_WIDGET(newWebView);
+	*/
 }
 
 static gboolean webViewLoadFailed(WebKitWebView *webView, WebKitLoadEvent loadEvent, const char *failingURI, GError *error, BrowserWindow *window)
@@ -948,7 +956,12 @@ static void browser_window_init(BrowserWindow *window)
     g_atomic_int_inc(&windowCount);
 
     gtk_window_set_title(GTK_WINDOW(window), defaultWindowTitle);
-    gtk_window_set_default_size(GTK_WINDOW(window), 800, 600);
+    gtk_window_set_default_size(GTK_WINDOW(window), 1000, 500); //CHB 800, 600);
+	gtk_widget_set_size_request(GTK_WIDGET(window), 1000, 500);//CHB
+	gtk_window_set_resizable(GTK_WINDOW(window), FALSE); //CHB
+	gtk_window_set_deletable(GTK_WINDOW(window), FALSE); //CHB
+	gtk_window_set_type_hint(GTK_WINDOW(window), GDK_WINDOW_TYPE_HINT_MENU); //CHB
+	//gtk_window_set_decorated(GTK_WINDOW(window), FALSE); //CHB 
 
     window->uriEntry = gtk_entry_new();
     g_signal_connect_swapped(window->uriEntry, "activate", G_CALLBACK(activateUriEntryCallback), (gpointer)window);
@@ -1095,7 +1108,10 @@ static void browserWindowConstructed(GObject *gObject)
     g_signal_connect(window->webView, "notify::uri", G_CALLBACK(webViewURIChanged), window);
     g_signal_connect(window->webView, "notify::estimated-load-progress", G_CALLBACK(webViewLoadProgressChanged), window);
     g_signal_connect(window->webView, "notify::title", G_CALLBACK(webViewTitleChanged), window);
-    g_signal_connect(window->webView, "create", G_CALLBACK(webViewCreate), window);
+
+    g_signal_connect(window->webView, "create", G_CALLBACK(webViewCreate), window); //CHB
+    //g_signal_connect(window->webView, "create", G_CALLBACK(webViewURIChanged), window);//CHB
+
     g_signal_connect(window->webView, "load-failed", G_CALLBACK(webViewLoadFailed), window);
     g_signal_connect(window->webView, "load-failed-with-tls-errors", G_CALLBACK(webViewLoadFailedWithTLSerrors), window);
     g_signal_connect(window->webView, "decide-policy", G_CALLBACK(webViewDecidePolicy), window);
