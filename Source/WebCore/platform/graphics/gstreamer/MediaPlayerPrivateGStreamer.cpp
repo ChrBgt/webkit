@@ -68,11 +68,6 @@
 #include "AudioSourceProviderGStreamer.h"
 #endif
 
-//CHB test
-#define GST_INFO g_printerr
-#define GST_DEBUG g_printerr
-
-
 // Max interval in seconds to stay in the READY state on manual
 // state change requests.
 static const unsigned gReadyStateTimerInterval = 60;
@@ -80,10 +75,10 @@ static const unsigned gReadyStateTimerInterval = 60;
 GST_DEBUG_CATEGORY_EXTERN(webkit_media_player_debug);
 #define GST_CAT_DEFAULT webkit_media_player_debug
 
-//CHB testing
+//CHB test
 //#define LOG_MEDIA_MESSAGE(...) g_printerr("CHB     " __VA_ARGS__);g_printerr("\n")
 //#define INFO_MEDIA_MESSAGE(...) g_printerr("CHBinfo " __VA_ARGS__);g_printerr("\n")
-//eof CHB testing
+//eof CHB test
 
 using namespace std;
 
@@ -195,6 +190,7 @@ MediaPlayerPrivateGStreamer::MediaPlayerPrivateGStreamer(MediaPlayer* player)
     , m_paused(true)
     , m_playbackRatePause(false)
     , m_seeking(false)
+	, m_prepareforseeking(false) //CHB gst/seek
     , m_seekIsPending(false)
     , m_timeOfOverlappingSeek(-1)
     , m_canFallBackToLastFinishedSeekPosition(false)
@@ -406,8 +402,10 @@ bool MediaPlayerPrivateGStreamer::changePipelineState(GstState newState)
     GstStateChangeReturn setStateResult = gst_element_set_state(m_pipeline.get(), newState);
     GstState pausedOrPlaying = newState == GST_STATE_PLAYING ? GST_STATE_PAUSED : GST_STATE_PLAYING;
     if (currentState != pausedOrPlaying && setStateResult == GST_STATE_CHANGE_FAILURE) {
+        LOG_MEDIA_MESSAGE("Changing state change failed"); //CHB test
         return false;
     }
+	else LOG_MEDIA_MESSAGE("Changing state change succeeded"); //CHB test
 
     // Create a timer when entering the READY state so that we can free resources
     // if we stay for too long on READY.
@@ -459,9 +457,7 @@ void MediaPlayerPrivateGStreamer::pause()
         return;
 
     if (changePipelineState(GST_STATE_PAUSED))
-{//CHB testing
-        INFO_MEDIA_MESSAGE("Pause");
-}//CHB testing
+        INFO_MEDIA_MESSAGE("Pause");    //CHB test    GST_INFO("Pause");
     else
         loadingFailed(MediaPlayer::Empty);
 }
@@ -469,24 +465,35 @@ void MediaPlayerPrivateGStreamer::pause()
 float MediaPlayerPrivateGStreamer::duration() const
 {
     if (!m_pipeline)
+    {//CHB test
+        INFO_MEDIA_MESSAGE("duration: !m_pipeline\n");
         return 0.0f;
-
+    }
     if (m_errorOccured)
+    {//CHB test
+        INFO_MEDIA_MESSAGE("duration: m_errorOccured\n");
         return 0.0f;
-
+    }
     // Media duration query failed already, don't attempt new useless queries.
     if (!m_mediaDurationKnown)
+    {//CHB test
+        INFO_MEDIA_MESSAGE("duration: !m_mediaDurationKnown\n");
         return numeric_limits<float>::infinity();
-
+    }
     if (m_mediaDuration)
+    {//CHB test
+        INFO_MEDIA_MESSAGE("duration: m_mediaDuration\n");
         return m_mediaDuration;
-
+    }
     GstFormat timeFormat = GST_FORMAT_TIME;
     gint64 timeLength = 0;
 
     bool failure = !gst_element_query_duration(m_pipeline.get(), timeFormat, &timeLength) || static_cast<guint64>(timeLength) == GST_CLOCK_TIME_NONE;
     if (failure) {
-        LOG_MEDIA_MESSAGE("Time duration query failed for %s", m_url.string().utf8().data());
+		GstState state, pending; //CHB test
+        LOG_MEDIA_MESSAGE("Time duration query failed for %s with %d %d %s", m_url.string().utf8().data(), (int)gst_element_query_duration(m_pipeline.get(), timeFormat, &timeLength), (int)(static_cast<guint64>(timeLength) == GST_CLOCK_TIME_NONE), gst_element_state_change_return_get_name (gst_element_get_state(m_pipeline.get(), &state, &pending, 0)));//CHB test
+        LOG_MEDIA_MESSAGE("... and with %s %s", gst_element_state_get_name(state), gst_element_state_get_name(pending));//CHB test
+        //CHB test   LOG_MEDIA_MESSAGE("Time duration query failed for %s", m_url.string().utf8().data());
         return numeric_limits<float>::infinity();
     }
 
@@ -528,7 +535,15 @@ void MediaPlayerPrivateGStreamer::seek(float time)
         return;
 
     INFO_MEDIA_MESSAGE("[Seek] seek attempt to %f secs", time);
-
+	
+	//CHB gst/seek
+	m_prepareforseeking = true;
+	changePipelineState(GST_STATE_PLAYING);
+	updateStates();
+    //eof CHB
+	
+    INFO_MEDIA_MESSAGE("[Seek] isLiveStream %d  m_seeking %d", (int)isLiveStream(), (int)m_seeking);
+	
     // Avoid useless seeking.
     if (time == currentTime())
         return;
@@ -551,7 +566,7 @@ void MediaPlayerPrivateGStreamer::seek(float time)
     GstStateChangeReturn getStateResult = gst_element_get_state(m_pipeline.get(), &state, nullptr, 0);
     if (getStateResult == GST_STATE_CHANGE_FAILURE || getStateResult == GST_STATE_CHANGE_NO_PREROLL) {
         LOG_MEDIA_MESSAGE("[Seek] cannot seek, current state change is %s", gst_element_state_change_return_get_name(getStateResult));
-        return;
+		return;
     }
     if (getStateResult == GST_STATE_CHANGE_ASYNC || state < GST_STATE_PAUSED || m_isEndReached) {
         m_seekIsPending = true;
@@ -568,6 +583,8 @@ void MediaPlayerPrivateGStreamer::seek(float time)
             return;
         }
     }
+
+	m_prepareforseeking = false; //CHB gst/seek	
 
     m_seeking = true;
     m_seekTime = time;
@@ -991,8 +1008,10 @@ gboolean MediaPlayerPrivateGStreamer::handleMessage(GstMessage* message)
         asyncStateChangeDone();
         break;
     case GST_MESSAGE_STATE_CHANGED: {
+        INFO_MEDIA_MESSAGE("GST_MESSAGE_STATE_CHANGED");//CHB test
         if (!messageSourceIsPlaybin || m_delayingLoad)
             break;
+        INFO_MEDIA_MESSAGE("GST_MESSAGE_STATE_CHANGED2 %d %d", messageSourceIsPlaybin, m_delayingLoad);//CHB test
         updateStates();
 
         // Construct a filename for the graphviz dot file output.
@@ -1004,6 +1023,7 @@ gboolean MediaPlayerPrivateGStreamer::handleMessage(GstMessage* message)
         break;
     }
     case GST_MESSAGE_BUFFERING:
+        INFO_MEDIA_MESSAGE("GST_MESSAGE_BUFFERING");//CHB test
         processBufferingStats(message);
         break;
     case GST_MESSAGE_DURATION_CHANGED:
@@ -1032,6 +1052,7 @@ gboolean MediaPlayerPrivateGStreamer::handleMessage(GstMessage* message)
         // is disabled. It also happens relatively often with
         // HTTP adaptive streams when switching between different
         // variants of a stream.
+        INFO_MEDIA_MESSAGE("GST_MESSAGE_CLOCK_LOST");//CHB test
         gst_element_set_state(m_pipeline.get(), GST_STATE_PAUSED);
         gst_element_set_state(m_pipeline.get(), GST_STATE_PLAYING);
         break;
@@ -1041,9 +1062,11 @@ gboolean MediaPlayerPrivateGStreamer::handleMessage(GstMessage* message)
         // This can happen if the latency of live elements changes, or
         // for one reason or another a new live element is added or
         // removed from the pipeline.
+        INFO_MEDIA_MESSAGE("GST_MESSAGE_LATENCY");//CHB test
         gst_bin_recalculate_latency(GST_BIN(m_pipeline.get()));
         break;
     case GST_MESSAGE_ELEMENT:
+	    INFO_MEDIA_MESSAGE("GST_MESSAGE_ELEMENT");//CHB test
         if (gst_is_missing_plugin_message(message)) {
             if (gst_install_plugins_supported()) {
                 m_missingPluginsCallback = MediaPlayerRequestInstallMissingPluginsCallback::create([this](uint32_t result) {
@@ -1446,6 +1469,13 @@ void MediaPlayerPrivateGStreamer::updateStates()
                 m_networkState = MediaPlayer::Loading;
             }
 
+			//CHB gst/seek
+			if (m_prepareforseeking){
+                LOG_MEDIA_MESSAGE("[Seek] Reset streaming");
+                m_isStreaming = false;
+				setDownloadBuffering();
+		    }
+			//eof CHB
             break;
         default:
             ASSERT_NOT_REACHED();
@@ -1508,6 +1538,7 @@ void MediaPlayerPrivateGStreamer::updateStates()
             changePipelineState(GST_STATE_PLAYING);
 
         m_networkState = MediaPlayer::Loading;
+
         break;
     default:
         LOG_MEDIA_MESSAGE("Else : %d", getStateResult);
@@ -1667,13 +1698,18 @@ void MediaPlayerPrivateGStreamer::cacheDuration()
 {
     if (m_mediaDuration || !m_mediaDurationKnown)
         return;
-
-    float newDuration = duration();
+    
+	INFO_MEDIA_MESSAGE("cacheDuration\n");//CHB test
+    
+	float newDuration = duration();
     if (std::isinf(newDuration)) {
         // Only pretend that duration is not available if the the query failed in a stable pipeline state.
         GstState state;
         if (gst_element_get_state(m_pipeline.get(), &state, nullptr, 0) == GST_STATE_CHANGE_SUCCESS && state > GST_STATE_READY)
+        {//CHB test
+            INFO_MEDIA_MESSAGE("cacheDuration current state %d\n", (int)state);
             m_mediaDurationKnown = false;
+        }
         return;
     }
 
@@ -1881,20 +1917,21 @@ GstElement* MediaPlayerPrivateGStreamer::createAudioSink()
     /*CHB
     m_autoAudioSink = gst_element_factory_make("autoaudiosink", 0);*/
 	
-	// CHB testing
-    //m_autoAudioSink = gst_element_factory_make("fakesink", 0); //CHB
-    //g_object_set (m_autoAudioSink.get(), "dump", TRUE, NULL);//CHB
+	// CHB test (old)
+    //m_autoAudioSink = gst_element_factory_make("fakesink", 0);
+    //g_object_set (m_autoAudioSink.get(), "dump", TRUE, NULL);
+	//eof CHB test (old)
 	
-    /*CHB*/
+    //CHB
     GstElement* gstidentity = gst_element_factory_make("identity", 0);
-    g_object_set (gstidentity, "sync", TRUE, NULL);
+    g_object_set (gstidentity, "sync", TRUE, NULL); //attention: changed behavior from gst 1.6. on (CHB)
     m_autoAudioSink = gst_element_factory_make("filesink", 0);
     g_object_set (m_autoAudioSink.get(), "location", "/dev/stdout", NULL);
     //g_object_set (m_autoAudioSink.get(), "location", "/opt/gtk/gtk+-3.14.8/gdk/broadway/cbpipe3", NULL);
     g_object_set (m_autoAudioSink.get(), "append", TRUE, NULL);
-    //g_object_set (m_autoAudioSink.get(), "sync", TRUE, NULL);  doesnt change anything
+    g_object_set (m_autoAudioSink.get(), "sync", TRUE, NULL);  //doesnt change anything
     g_object_set (m_autoAudioSink.get(), "async", FALSE, NULL);
-    /*eof CHB*/
+    //eof CHB
 
     if (!m_autoAudioSink) {
         WARN_MEDIA_MESSAGE("GStreamer's autoaudiosink not found. Please check your gst-plugins-good installation");
@@ -1987,7 +2024,12 @@ void MediaPlayerPrivateGStreamer::createGSTPlayBin()
     g_signal_connect(bus.get(), "message", G_CALLBACK(mediaPlayerPrivateMessageCallback), this);
 
     g_object_set(m_pipeline.get(), "mute", m_player->muted(), nullptr);
-
+	
+	//CHB test (old)
+	//gst_pipeline_set_latency(GST_PIPELINE(m_pipeline.get()), toGstClockTime(4.0));	
+	//gst_pipeline_set_delay(GST_PIPELINE(m_pipeline.get()), toGstClockTime(4.0));
+    //eof CHB test (old)
+	
     //CHB audio & video finishing, would also go without it but then show various problems with live streaming sources
     if( !(m_player->client().mediaPlayerIsVideo()) )
 	    g_object_set (m_pipeline.get(), "ring-buffer-max-size", 4294967295, NULL);

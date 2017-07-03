@@ -284,15 +284,9 @@ int main(int argc, char *argv[])
     g_setenv("WEBKIT_INJECTED_BUNDLE_PATH", WEBKIT_INJECTED_BUNDLE_PATH, FALSE);
 #endif
 
-	/*CHB
     const gchar *singleprocess = g_getenv("MINIBROWSER_SINGLEPROCESS");
     webkit_web_context_set_process_model(webkit_web_context_get_default(), (singleprocess && *singleprocess) ?
         WEBKIT_PROCESS_MODEL_SHARED_SECONDARY_PROCESS : WEBKIT_PROCESS_MODEL_MULTIPLE_SECONDARY_PROCESSES);
-	*/
-	
-    webkit_web_context_set_process_model(webkit_web_context_get_default(), WEBKIT_PROCESS_MODEL_MULTIPLE_SECONDARY_PROCESSES); //CHB
-	
-	webkit_web_context_set_cache_model (webkit_web_context_get_default(), WEBKIT_CACHE_MODEL_DOCUMENT_BROWSER); //CHB  inserted, we could also use WEBKIT_CACHE_MODEL_DOCUMENT_VIEWER (no caching)
 
     GOptionContext *context = g_option_context_new(NULL);
     g_option_context_add_main_entries(context, commandLineOptions, 0);

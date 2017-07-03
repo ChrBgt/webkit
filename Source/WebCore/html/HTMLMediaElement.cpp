@@ -148,6 +148,12 @@
 #include <bindings/ScriptObject.h>
 #endif
 
+//CHB test
+//#define LOG_DISABLED 0
+//#define LOG(Media, ...) g_printerr(" CHB" __VA_ARGS__);g_printerr("\n")
+//#define LOG_MEDIA_EVENTS 1
+//eof CHB test
+
 namespace WebCore {
 
 static const double SeekRepeatDelay = 0.1;
@@ -2484,7 +2490,7 @@ void HTMLMediaElement::seekWithTolerance(const MediaTime& inTime, const MediaTim
     // If the media engine has been told to postpone loading data, let it go ahead now.
     if (m_preload < MediaPlayer::Auto && m_readyState < HAVE_FUTURE_DATA)
         prepareToPlay();
-
+	
     // Get the current time before setting m_seeking, m_lastSeekTime is returned once it is set.
     refreshCachedTime();
     MediaTime now = currentMediaTime();
@@ -2968,7 +2974,6 @@ void HTMLMediaElement::pause()
     pauseInternal();
 }
 
-
 void HTMLMediaElement::pauseInternal()
 {
     LOG(Media, "HTMLMediaElement::pauseInternal(%p)", this);
@@ -2993,12 +2998,14 @@ void HTMLMediaElement::pauseInternal()
         m_paused = true;
         scheduleTimeupdateEvent(false);
         scheduleEvent(eventNames().pauseEvent);
+        LOG(Media, "HTMLMediaElement::pauseInternal - pauseEvent scheduled"); //CHB test
 
         if (MemoryPressureHandler::singleton().isUnderMemoryPressure())
             purgeBufferedDataIfPossible();
     }
 
     updatePlayState();
+	
 }
 
 #if ENABLE(MEDIA_SOURCE)
@@ -3247,6 +3254,8 @@ void HTMLMediaElement::beginScanning(ScanDirection direction)
 {
     m_scanType = supportsScanning() ? Scan : Seek;
     m_scanDirection = direction;
+	
+    LOG(Media, "HTMLMediaElement::beginScanning"); //CHB test
 
     if (m_scanType == Seek) {
         // Scanning by seeking requires the video to be paused during scanning.
@@ -4318,6 +4327,8 @@ void HTMLMediaElement::mediaPlayerTimeChanged(MediaPlayer*)
                 // changes paused to true and fires a simple event named pause at the media element.
                 m_paused = true;
                 scheduleEvent(eventNames().pauseEvent);
+				LOG(Media, "HTMLMediaElement::mediaPlayerTimeChanged - pauseEvent scheduled"); //CHB test
+
                 m_mediaSession->clientWillPausePlayback();
             }
             // Queue a task to fire a simple event named ended at the media element.
@@ -4615,13 +4626,22 @@ PassRefPtr<TimeRanges> HTMLMediaElement::seekable() const
 bool HTMLMediaElement::potentiallyPlaying() const
 {
     if (isBlockedOnMediaController())
+    {//CHB test
+        LOG(Media, "potentiallyPlaying: isBlockedOnMediaController\n"); 
         return false;
-    
+    }
     if (!couldPlayIfEnoughData())
+    {//CHB test
+        LOG(Media, "potentiallyPlaying: !couldPlayIfEnoughData\n");
         return false;
-
+    }
     if (m_readyState >= HAVE_FUTURE_DATA)
+    {//CHB test
+        LOG(Media, "potentiallyPlaying: m_readyState >= HAVE_FUTURE_DATA\n");
         return true;
+    }
+    //CHB test
+    LOG(Media, "potentiallyPlaying: %d %d\n", m_readyStateMaximum >= HAVE_FUTURE_DATA, m_readyState < HAVE_FUTURE_DATA);
 
     return m_readyStateMaximum >= HAVE_FUTURE_DATA && m_readyState < HAVE_FUTURE_DATA;
 }
@@ -4745,7 +4765,10 @@ void HTMLMediaElement::updatePlayState()
 
     if (m_pausedInternal) {
         if (!m_player->paused())
+		{//CHB test
+	        LOG(Media, "HTMLMediaElement::updatePlayState paused() m_pausedInternal %d %d", m_seeking, m_seekTaskQueue.hasPendingTasks()); //CHB test
             m_player->pause();
+		}
         refreshCachedTime();
         m_playbackProgressTimer.stop();
         if (hasMediaControls())
@@ -4757,7 +4780,7 @@ void HTMLMediaElement::updatePlayState()
     bool shouldBePlaying = potentiallyPlaying();
     bool playerPaused = m_player->paused();
 
-    LOG(Media, "HTMLMediaElement::updatePlayState(%p) - shouldBePlaying = %s, playerPaused = %s", this, boolString(shouldBePlaying), boolString(playerPaused));
+    LOG(Media, "HTMLMediaElement::updatePlayState(%p) - shouldBePlaying = %s, playerPaused = %s, seeking %d %d", this, boolString(shouldBePlaying), boolString(playerPaused), m_seeking, m_seekTaskQueue.hasPendingTasks()); //CHB test seeking added
 
     if (shouldBePlaying) {
         setDisplayMode(Video);
@@ -4793,7 +4816,10 @@ void HTMLMediaElement::updatePlayState()
         setPlaying(true);
     } else {
         if (!playerPaused)
+		{//CHB test
+	        LOG(Media, "HTMLMediaElement::updatePlayState paused() !shouldBePlaying %d", m_seeking, m_seekTaskQueue.hasPendingTasks()); //CHB test
             m_player->pause();
+		}
         refreshCachedTime();
 
         m_playbackProgressTimer.stop();

@@ -86,7 +86,7 @@ public:
     void prepareToPlay() override;
     void play() override;
     void pause() override;
-
+	
     bool paused() const override;
     bool seeking() const override;
 
@@ -172,7 +172,6 @@ private:
     bool doSeek(gint64 position, float rate, GstSeekFlags seekType);
     void updatePlaybackRate();
 
-
     String engineDescription() const override { return "GStreamer"; }
     bool isLiveStream() const override { return m_isStreaming; }
     bool didPassCORSAccessCheck() const override;
@@ -203,6 +202,7 @@ private:
     bool m_paused;
     bool m_playbackRatePause;
     bool m_seeking;
+	bool m_prepareforseeking; //CHB gst/seek
     bool m_seekIsPending;
     float m_timeOfOverlappingSeek;
     bool m_canFallBackToLastFinishedSeekPosition;

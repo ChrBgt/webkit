@@ -35,6 +35,12 @@
 #include <wtf/StdLibExtras.h>
 #include <wtf/text/AtomicString.h>
 
+//CHB test
+#define LOG_DISABLED 0
+#define LOG(Media, ...) g_printerr(" CHB" __VA_ARGS__);g_printerr("\n")
+#define LOG_MEDIA_EVENTS 1
+//eof CHB test
+
 using namespace WebCore;
 
 Ref<MediaController> MediaController::create(ScriptExecutionContext& context)
@@ -211,6 +217,8 @@ void MediaController::pause()
     m_paused = true;
     // queue a task to fire a simple event named pause at the MediaController,
     scheduleEvent(eventNames().pauseEvent);
+    LOG(Media, "MediaController::pause - pauseEvent scheduled"); //CHB test
+
     // and then report the controller state of the MediaController.
     reportControllerState();
 }
@@ -431,6 +439,7 @@ void MediaController::updatePlaybackState()
 
             // and then fires a simple event named pause at the MediaController object.
             scheduleEvent(eventNames().pauseEvent);
+			LOG(Media, "MediaController::updatePlaybackState - pauseEvent scheduled"); //CHB test
         }
     }
 

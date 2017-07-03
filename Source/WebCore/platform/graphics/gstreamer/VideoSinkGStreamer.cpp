@@ -60,6 +60,11 @@ static GstStaticPadTemplate s_sinkTemplate = GST_STATIC_PAD_TEMPLATE("sink", GST
 GST_DEBUG_CATEGORY_STATIC(webkitVideoSinkDebug);
 #define GST_CAT_DEFAULT webkitVideoSinkDebug
 
+//CHB test
+//#define GST_DEBUG_OBJECT(src, ...) g_printerr("CHB src " __VA_ARGS__);g_printerr("\n")
+//#define GST_ERROR_OBJECT(src, ...) g_printerr("CHB src " __VA_ARGS__);g_printerr("\n")
+//eof CHB test
+
 enum {
     REPAINT_REQUESTED,
     LAST_SIGNAL
@@ -109,6 +114,8 @@ static void webkit_video_sink_init(WebKitVideoSink* sink)
 {
     sink->priv = G_TYPE_INSTANCE_GET_PRIVATE(sink, WEBKIT_TYPE_VIDEO_SINK, WebKitVideoSinkPrivate);
     g_object_set(GST_BASE_SINK(sink), "enable-last-sample", FALSE, NULL);
+	//g_object_set (GST_BASE_SINK(sink), "sync", TRUE, NULL); //CHB test --> problematic with livestream
+	//g_object_set (GST_BASE_SINK(sink), "async", FALSE, NULL); //CHB test --> problematic with livestream
     new (sink->priv) WebKitVideoSinkPrivate();
 }
 

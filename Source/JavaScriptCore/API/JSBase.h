@@ -28,6 +28,7 @@
 
 #ifndef __cplusplus
 #include <stdbool.h>
+#include <uchar.h>
 #endif
 
 #ifdef __OBJC__

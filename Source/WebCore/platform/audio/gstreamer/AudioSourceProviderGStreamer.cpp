@@ -132,7 +132,7 @@ void AudioSourceProviderGStreamer::configureAudioBin(GstElement* audioBin, GstEl
     g_object_set (audioSink, "location", "/dev/stdout", NULL);
     //g_object_set (audioSink, "location", "/opt/gtk/gtk+-3.14.8/gdk/broadway/cbpipe3", NULL);
     g_object_set (audioSink, "append", TRUE, NULL);
-    //g_object_set (audioSink, "sync", TRUE, NULL);  doesnt change anything
+    g_object_set (audioSink, "sync", TRUE, NULL);  //doesnt change anything
     g_object_set (audioSink, "async", FALSE, NULL);
     //eof CHB
 	
