@@ -149,9 +149,9 @@
 #endif
 
 //CHB test
-//#define LOG_DISABLED 0
-//#define LOG(Media, ...) g_printerr(" CHB" __VA_ARGS__);g_printerr("\n")
-//#define LOG_MEDIA_EVENTS 1
+#define LOG_DISABLED 0
+#define LOG(Media, ...) g_printerr("Media html " __VA_ARGS__);g_printerr("\n")
+#define LOG_MEDIA_EVENTS 1
 //eof CHB test
 
 namespace WebCore {

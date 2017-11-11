@@ -76,8 +76,8 @@ GST_DEBUG_CATEGORY_EXTERN(webkit_media_player_debug);
 #define GST_CAT_DEFAULT webkit_media_player_debug
 
 //CHB test
-//#define LOG_MEDIA_MESSAGE(...) g_printerr("CHB     " __VA_ARGS__);g_printerr("\n")
-//#define INFO_MEDIA_MESSAGE(...) g_printerr("CHBinfo " __VA_ARGS__);g_printerr("\n")
+#define LOG_MEDIA_MESSAGE(...) g_printerr("gst        " __VA_ARGS__);g_printerr("\n")
+#define INFO_MEDIA_MESSAGE(...) g_printerr("gst info   " __VA_ARGS__);g_printerr("\n")
 //eof CHB test
 
 using namespace std;
@@ -456,9 +456,9 @@ void MediaPlayerPrivateGStreamer::pause()
     if (currentState < GST_STATE_PAUSED && pendingState <= GST_STATE_PAUSED)
         return;
 
-    if (changePipelineState(GST_STATE_PAUSED))
+    if (changePipelineState(GST_STATE_PAUSED)) {
         INFO_MEDIA_MESSAGE("Pause");    //CHB test    GST_INFO("Pause");
-    else
+    } else
         loadingFailed(MediaPlayer::Empty);
 }
 
