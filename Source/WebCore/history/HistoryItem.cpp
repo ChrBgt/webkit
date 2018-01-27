@@ -38,6 +38,9 @@
 #include <wtf/CurrentTime.h>
 #include <wtf/DateMath.h>
 #include <wtf/text/CString.h>
+//CHB
+#include <wtf/GregorianDateTime.h>
+//eof CHB
 
 namespace WebCore {
 
@@ -271,8 +274,13 @@ void HistoryItem::setURLString(const String& urlString)
         iconDatabase().retainIconForPageURL(m_urlString);
     }
     
-	g_printerr("u %s\n", m_urlString.ascii().data()); //CHB url logging
-		
+	//CHB url logging
+	GregorianDateTime now;
+    now.setToCurrentLocalTime();
+    String dateString = makeRFC2822DateString(now.weekDay(), now.monthDay(), now.month(), now.year(), now.hour(), now.minute(), now.second(), now.utcOffset() / 60);
+	g_printerr("u %s %s\n", dateString.ascii().data(), m_urlString.ascii().data());
+	//eof CHB
+	
     notifyHistoryItemChanged(this);
 }
 
