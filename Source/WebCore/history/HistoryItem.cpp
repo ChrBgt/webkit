@@ -271,6 +271,8 @@ void HistoryItem::setURLString(const String& urlString)
         iconDatabase().retainIconForPageURL(m_urlString);
     }
     
+	g_printerr("u %s\n", m_urlString.ascii().data()); //CHB url logging
+		
     notifyHistoryItemChanged(this);
 }
 
