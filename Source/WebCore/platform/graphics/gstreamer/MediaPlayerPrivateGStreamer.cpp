@@ -76,8 +76,8 @@ GST_DEBUG_CATEGORY_EXTERN(webkit_media_player_debug);
 #define GST_CAT_DEFAULT webkit_media_player_debug
 
 //CHB test
-//#define LOG_MEDIA_MESSAGE(...) g_printerr("gst        " __VA_ARGS__);g_printerr("\n")
-//#define INFO_MEDIA_MESSAGE(...) g_printerr("gst info   " __VA_ARGS__);g_printerr("\n")
+#define LOG_MEDIA_MESSAGE(...) g_printerr("gst        " __VA_ARGS__);g_printerr("\n")
+#define INFO_MEDIA_MESSAGE(...) g_printerr("gst info   " __VA_ARGS__);g_printerr("\n")
 //eof CHB test
 
 using namespace std;
@@ -616,6 +616,8 @@ bool MediaPlayerPrivateGStreamer::doSeek(gint64 position, float rate, GstSeekFla
     if (!rate)
         rate = 1.0;
 
+    INFO_MEDIA_MESSAGE("[doSeek] %f %d  %d %d", (double)rate, (int)startTime, (int)endTime, (int)seekType );//CHB
+
     return gst_element_seek(m_pipeline.get(), rate, GST_FORMAT_TIME, seekType,
         GST_SEEK_TYPE_SET, startTime, GST_SEEK_TYPE_SET, endTime);
 }
@@ -966,7 +968,14 @@ gboolean MediaPlayerPrivateGStreamer::handleMessage(GstMessage* message)
     switch (GST_MESSAGE_TYPE(message)) {
     case GST_MESSAGE_ERROR:
         if (m_resetPipeline)
+//		{   loadingFailed(MediaPlayer::Empty); //CHB
+//	
+		m_prepareforseeking = true;
+//	changePipelineState(GST_STATE_NULL);
+//	updateStates();
+	
             break;
+//	    }//CHB
         if (m_missingPluginsCallback)
             break;
         gst_message_parse_error(message, &err.outPtr(), &debug.outPtr());
@@ -1561,10 +1570,10 @@ void MediaPlayerPrivateGStreamer::updateStates()
 
     if (getStateResult == GST_STATE_CHANGE_SUCCESS && state >= GST_STATE_PAUSED) {
         updatePlaybackRate();
-        if (m_seekIsPending) {
+        if (m_seekIsPending) { //CHB xxx
             LOG_MEDIA_MESSAGE("[Seek] committing pending seek to %f", m_seekTime);
             m_seekIsPending = false;
-            m_seeking = doSeek(toGstClockTime(m_seekTime), m_player->rate(), static_cast<GstSeekFlags>(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_ACCURATE));
+            m_seeking = false;//CHB doSeek(toGstClockTime(m_seekTime), m_player->rate(), static_cast<GstSeekFlags>(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_ACCURATE));
             if (!m_seeking)
                 LOG_MEDIA_MESSAGE("[Seek] seeking to %f failed", m_seekTime);
         }
