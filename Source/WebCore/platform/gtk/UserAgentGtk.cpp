@@ -40,7 +40,8 @@ class UserAgentQuirks {
 public:
     enum UserAgentQuirk {
         NeedsMacintoshPlatform,
-
+        AugtAltUA, //CHB
+		
         NumUserAgentQuirks
     };
 
@@ -120,6 +121,13 @@ static const String versionForUAString()
 static String buildUserAgentString(const UserAgentQuirks& quirks)
 {
     StringBuilder uaString;
+	
+	//CHB
+	if(quirks.contains(UserAgentQuirks::AugtAltUA))
+	    uaString.appendLiteral("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
+    else{
+	//eof CHB
+	
     uaString.appendLiteral("Mozilla/5.0 ");
     uaString.append('(');
 
@@ -137,13 +145,16 @@ static String buildUserAgentString(const UserAgentQuirks& quirks)
         uaString.append(platformVersionForUAString());
 
     uaString.appendLiteral(") AppleWebKit/");
-    uaString.append(versionForUAString());
+	uaString.append(versionForUAString());
     // Version/X is mandatory *before* Safari/X to be a valid Safari UA. See
     // https://bugs.webkit.org/show_bug.cgi?id=133403 for details.
+	
     uaString.appendLiteral(" (KHTML, like Gecko) Version/8.0 Safari/");
-    uaString.append(versionForUAString());
-
+	uaString.append(versionForUAString());	
+	}//CHB
+	
     return uaString.toString();
+
 }
 
 static const String standardUserAgentStatic()
@@ -181,6 +192,16 @@ String standardUserAgentForURL(const URL& url)
         // use always Macintosh as platform. See https://bugs.webkit.org/show_bug.cgi?id=125444.
         quirks.add(UserAgentQuirks::NeedsMacintoshPlatform);
     }
+	//CHB
+	else if (url.string().contains("agent")
+		     || url.string().contains("Agent")
+	         || url.string().contains("browser")
+			 || url.string().contains("Browser")
+             || url.host().endsWith("whatsmyua.info")
+			 ) {
+		 quirks.add(UserAgentQuirks::AugtAltUA);
+    }
+	//eof CHB
 
     // The null string means we don't need a specific UA for the given URL.
     return quirks.isEmpty() ? String() : buildUserAgentString(quirks);

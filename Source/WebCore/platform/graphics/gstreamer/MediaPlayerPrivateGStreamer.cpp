@@ -262,7 +262,7 @@ MediaPlayerPrivateGStreamer::~MediaPlayerPrivateGStreamer()
         g_signal_handlers_disconnect_by_func(m_pipeline.get(), reinterpret_cast<gpointer>(mediaPlayerPrivateNewTextSampleCallback), this);
         g_signal_handlers_disconnect_by_func(m_pipeline.get(), reinterpret_cast<gpointer>(mediaPlayerPrivateTextChangedCallback), this);
 #endif
-
+/*
     //CHB https://bugs.webkit.org/attachment.cgi?id=262759&action=diff        gst_element_set_state(m_pipeline.get(), GST_STATE_NULL);
         GstState currentState;
         GstState pending;
@@ -271,6 +271,7 @@ MediaPlayerPrivateGStreamer::~MediaPlayerPrivateGStreamer()
 	    if (lastStateChange != GST_STATE_CHANGE_FAILURE)
             gst_element_set_state(m_pipeline.get(), GST_STATE_NULL);
 	//eof CHB
+*/
     }
 
     if (m_videoSink) {
@@ -1570,10 +1571,10 @@ void MediaPlayerPrivateGStreamer::updateStates()
 
     if (getStateResult == GST_STATE_CHANGE_SUCCESS && state >= GST_STATE_PAUSED) {
         updatePlaybackRate();
-        if (m_seekIsPending) { //CHB xxx
+        if (m_seekIsPending) {
             LOG_MEDIA_MESSAGE("[Seek] committing pending seek to %f", m_seekTime);
             m_seekIsPending = false;
-            m_seeking = false;//CHB doSeek(toGstClockTime(m_seekTime), m_player->rate(), static_cast<GstSeekFlags>(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_ACCURATE));
+            m_seeking = false; //CHB   doSeek(toGstClockTime(m_seekTime), m_player->rate(), static_cast<GstSeekFlags>(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_ACCURATE));
             if (!m_seeking)
                 LOG_MEDIA_MESSAGE("[Seek] seeking to %f failed", m_seekTime);
         }
