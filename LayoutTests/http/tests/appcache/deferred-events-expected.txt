@@ -1,0 +1,3 @@
+CONSOLE MESSAGE: line 1: ApplicationCache is deprecated. Please use ServiceWorkers instead.
+Test that AppicationCache events are deferred until after onload has been fired.
+SUCCESS

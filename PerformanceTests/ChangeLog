@@ -1,0 +1,189 @@
+2018-04-30  Myles C. Maxfield  <mmaxfield@apple.com>
+
+        Improve the performance of FontCascadeDescription's effectiveFamilies
+        https://bugs.webkit.org/show_bug.cgi?id=184720
+
+        Reviewed by Simon Fraser.
+
+        This performance test calls SystemFontDatabase::systemFontCascadeList() around 2,000,000 times (before
+        this patch is applied), which is roughly equivalent to the page we found the performance problem on.
+        The calling pattern is roughly equivalent in this test.
+
+        * Layout/system-ui.html: Added.
+
+2018-02-01  Geoffrey Garen  <ggaren@apple.com>
+
+        Make MallocBench easier for non-WebKit engineers to run
+        https://bugs.webkit.org/show_bug.cgi?id=182415
+
+        Reviewed by Saam Barati.
+
+        * MallocBench/MallocBench.xcodeproj/project.pbxproj: Use c++14 so we
+        can make_unique.
+
+        Specify that we support all Darwin platforms so you can test them.
+
+        * MallocBench/run-malloc-benchmarks: Specify the path to MallocBench
+        and libmbmalloc explicitly, rather than computing them implicitly
+        using webkitdirs. Non-WebKit folks don't have the directory structure
+        required by webkitdirs.
+
+        Remove Linux-specific and cmake-specific behaviors because we only
+        needed them in the world of implicit path computation.
+
+2018-01-31  Ryosuke Niwa  <rniwa@webkit.org>
+
+        Make run-perf-tests work with StyleBench and re-enable it
+        https://bugs.webkit.org/show_bug.cgi?id=182322
+
+        Reviewed by Antti Koivisto.
+
+        This patch updates the test harness to report new metrics of StyleBench.
+
+        Replaced the total time by the geometric mean of the time spent in each suite, and added scores
+        as a metric in addition to time. Also, updated the PerfTestRunner harness and the results template
+        to support "Score" metric with "pt" as its unit.
+
+        * Skipped: Unskipped the test.
+        * StyleBench/resources/benchmark-report.js:
+        (window.benchmarkClient.willStartFirstIteration..createTest): Added the unit as an optional argument
+        to report the score in addition to time. Also report the geomean of time instead of the total time.
+        (window.benchmarkClient.willStartFirstIteration): Report the geomean of time.
+        (window.benchmarkClient.didRunSuites): Record the entire measuredValues instead of just tests.
+        (window.benchmarkClient.didFinishLastIteration): Report the scores.
+        * resources/results-template.html: Added "Score" as a metric and "pt" as its unit.
+        * resources/runner.js:
+        (PerfTestRunner..finish): Ditto.
+
+2018-01-30  Ryosuke Niwa  <rniwa@webkit.org>
+
+        StyleBench: Generate more mutation steps
+        https://bugs.webkit.org/show_bug.cgi?id=182291
+
+        Rubber-stamped by Antti Koivisto
+
+        Use zero-based index instead of one-based index.
+
+        * StyleBench/resources/tests.js:
+        (makeSteps):
+
+2018-01-30  Antti Koivisto  <antti@apple.com>
+
+        StyleBench: Generate more mutation steps
+        https://bugs.webkit.org/show_bug.cgi?id=182291
+
+        Reviewed by Ryosuke Niwa.
+
+        The test should be doing multiple rounds of mutations in a single document to test what is supposed to test (like it did before r227756).
+        This also makes test results more stable and less dependent on possible first-time costs.
+
+        * StyleBench/resources/benchmark-runner.js:
+
+        Adjust correctionFactor to match the new steps count. With 1.5 Firefox is ~72rpm.
+
+        * StyleBench/resources/tests.js:
+        (makeSteps):
+
+        Generate 10 rounds of class/element mutation steps.
+        Give each generated step unique name so reporting works.
+        Make individual steps do fewer mutations.
+
+2018-01-29  Antti Koivisto  <antti@apple.com>
+
+        StyleBench: Remove : from a test name
+        https://bugs.webkit.org/show_bug.cgi?id=182258
+
+        Reviewed by Ryosuke Niwa.
+
+        It breaks reporting.
+
+        * StyleBench/resources/style-bench.js:
+        (nthPseudoClassConfiguration):
+
+2018-01-29  Ryosuke Niwa  <rniwa@webkit.org>
+
+        Temporarily skip StyleBench until webkit.org/b/182088 is fixed.
+
+        * Skipped:
+
+2018-01-29  Ryosuke Niwa  <rniwa@webkit.org>
+
+        Make StyleBench compatible with run-benchmark and run-perf-tests
+        https://bugs.webkit.org/show_bug.cgi?id=182262
+
+        Reviewed by Antti Koivisto.
+
+        Copied resource files referenced from Speedometer directory since run-benchmark needs to be able
+        to checkout each benchmark separately.
+
+        Removed the code to create tests of the same name five times in makeSteps since this
+        won't be compatible with either run-benchmark or run-perf-tests.
+
+        * StyleBench/index.html: Removed the code to show warnings for local files since run-benchmark
+        doesn't use HTTP server in WebDriver mode.
+        * StyleBench/resources/benchmark-report.js: Copied from resources/benchmark-report.js.
+        * StyleBench/resources/benchmark-runner.js: Copied from resources/benchmark-runner.js.
+        (BenchmarkRunner.prototype._finalize): Use the correction factor of 8 instead of 5 in StyleBench.
+        * StyleBench/resources/gauge.png: Copied from resources/gauge.png.
+        * StyleBench/resources/gauge@2x.png: Copied from resources/gauge@2x.png.
+        * StyleBench/resources/main.css: Copied from resources/main.css.
+        * StyleBench/resources/main.js: Copied from resources/main.js.
+        * StyleBench/resources/tests.js:
+        (makeSteps): Only make each test once.
+
+2018-01-26  Chris Nardi  <cnardi@chromium.org>
+
+        Addressing post-review comments after r226614
+        https://bugs.webkit.org/show_bug.cgi?id=182151
+
+        Reviewed by Myles C. Maxfield.
+
+        * StitchMarker/wtf/text/StringImpl.h:
+        (WTF::isSpaceOrNewline):
+        * StitchMarker/wtf/text/TextBreakIterator.cpp:
+        (WTF::numCodeUnitsInGraphemeClusters):
+        * StitchMarker/wtf/text/TextBreakIterator.h:
+
+2018-01-22  Antti Koivisto  <antti@apple.com>
+
+        StyleBench: Separate test for :nth pseudo classes
+        https://bugs.webkit.org/show_bug.cgi?id=181932
+
+        Reviewed by Sam Weinig.
+
+        Optimization strategies for nth are different from other structural pseudo classes (:first-child etc). Move them to a separate test.
+
+        * StyleBench/resources/style-bench.js:
+        (structuralPseudoClassConfiguration):
+        (nthPseudoClassConfiguration):
+
+            Add a new configuration.
+
+        (predefinedConfigurations):
+        (pseudoClassConfiguration): Deleted.
+
+2018-01-17  Ryosuke Niwa  <rniwa@webkit.org>
+
+        Temporarily skip Speedometer until we fix the metrics.
+
+        * Skipped:
+
+2018-01-16  Alex Christensen  <achristensen@webkit.org>
+
+        Fix Mac CMake build after r222900
+
+        * MallocBench/MallocBench/CMakeLists.txt:
+        The mbmalloc target doesn't exist if we're not in developer mode, so only use it if we are.
+
+2018-01-09  Ryosuke Niwa  <rniwa@webkit.org>
+
+        Speedometer 2.0: Update the About page.
+        https://bugs.webkit.org/show_bug.cgi?id=175918
+
+        Reviewed by Keith Miller.
+
+        Updated the about page for Speedometer 2.0.
+
+        * Speedometer/index.html:
+
+== Rolled over to ChangeLog-2018-01-01 ==

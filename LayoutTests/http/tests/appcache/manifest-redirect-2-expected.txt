@@ -1,0 +1,7 @@
+CONSOLE MESSAGE: line 1: ApplicationCache is deprecated. Please use ServiceWorkers instead.
+Test that a redirect makes resource caching fail.
+
+Should say SUCCESS:
+
+SUCCESS
+

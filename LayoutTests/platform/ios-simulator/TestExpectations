@@ -1,0 +1,69 @@
+# These are the layout test expectations for Apple's iOS simulator port of WebKit (both WebKit1 and WebKit2).
+#
+# See http://trac.webkit.org/wiki/TestExpectations for more information on this file.
+#
+
+css3/font-variant-small-caps-synthesis-coverage.html [ ImageOnlyFailure ]
+fast/frames/flattening/scrolling-in-object.html [ ImageOnlyFailure ]
+fast/frames/sandboxed-iframe-close-top-noclose.html [ Failure ]
+fast/multicol/flexbox-rows.html [ Skip ]
+workers/wasm-mem-post-message.html [ Failure ]
+
+fast/forms/input-text-word-wrap.html [ Skip ]
+fast/forms/search-vertical-alignment.html [ Skip ]
+fast/forms/searchfield-heights.html [ Skip ]
+fast/forms/visual-hebrew-text-field.html [ Skip ]
+
+# -webkit-flex off-by-one px
+webkit.org/b/126898 css3/flexbox/image-percent-max-height.html [ ImageOnlyFailure ]
+
+fast/block/positioning/rtl-fixed-positioning.html [ Failure ]
+fast/canvas/canvas-blending-global-alpha.html [ Failure ]
+fast/dom/Window/open-invalid-url.html [ Failure ]
+fast/events/before-input-delete-empty-list-target-ranges.html [ Failure ]
+fast/events/before-input-events-prevent-insert-composition.html [ Failure ]
+fast/events/before-input-events-prevent-recomposition.html [ Failure ]
+fast/events/document-elementFromPoint.html [ Failure ]
+fast/events/input-events-forecolor-data.html [ Failure ]
+fast/events/input-events-ime-composition.html [ Failure ]
+fast/events/input-events-selection-forecolor-data.html [ Failure ]
+fast/events/input-events-spell-checking-datatransfer.html [ Failure ]
+fast/canvas/canvas-ellipse-zero-lineto.html [ Failure ]
+fast/events/fire-scroll-event.html [ Failure ]
+
+media/track/track-in-band-legacy-api.html [ Failure ]
+media/track/video-track-alternate-groups.html [ Failure ]
+
+svg/filters/filter-hidden-content.svg [ Failure ]
+
+transforms/hittest-translated-content-off-to-infinity-and-back.html [ Pass ImageOnlyFailure ]
+
+webkit.org/b/172965 media/track/track-cue-overlap-snap-to-lines-not-set.html [ Failure ]
+
+webkit.org/b/156718 storage/websql/alter-to-info-table.html [ Failure ]
+
+# This test relies on Arial being used to draw Arabic. However, on iOS,
+# we explicitly disallow this because this font is too slow.
+fast/text/initial-advance-in-intermediate-run-complex.html [ ImageOnlyFailure ]
+
+# Simulator doesn't support WebAssembly.
+http/tests/security/contentSecurityPolicy/WebAssembly-allowed.html [ Failure ]
+http/tests/security/contentSecurityPolicy/WebAssembly-blocked-in-about-blank-iframe.html [ Failure ]
+http/tests/security/contentSecurityPolicy/WebAssembly-blocked-in-external-script.html [ Failure ]
+http/tests/security/contentSecurityPolicy/WebAssembly-blocked-in-subframe.html [ Failure ]
+http/tests/security/contentSecurityPolicy/WebAssembly-blocked.html [ Failure ]
+wasm/iframe-postmessage.html [ Skip ]
+wasm/iframe-parent-postmessage.html [ Skip ]
+wasm/window-postmessage.html [ Skip ]
+
+# These tests seem to fail due pixel rounding errors in the absolute positioned elements used as reference.
+webkit.org/b/170176 fast/inline-block/baseline-vertical-01.html [ ImageOnlyFailure ]
+webkit.org/b/170176 fast/inline-block/baseline-vertical-02.html [ ImageOnlyFailure ]
+webkit.org/b/170176 fast/inline-block/baseline-vertical-03.html [ ImageOnlyFailure ]
+webkit.org/b/170176 fast/inline-block/baseline-vertical-04.html [ ImageOnlyFailure ]
+
+# WebGL tests which need triaging https://bugs.webkit.org/b/174100
+webgl/1.0.2/conformance/uniforms/uniform-default-values.html [ Failure ]
+
+# This test requires Skia, which isn't available on iOS.
+webkit.org/b/174079 fast/text/variations/skia-postscript-name.html [ ImageOnlyFailure ]
