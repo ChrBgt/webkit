@@ -41,6 +41,7 @@ public:
     enum UserAgentQuirk {
         NeedsMacintoshPlatform,
         AugtAltUA, //CHB
+        AugtAlt2UA, //CHB
 		
         NumUserAgentQuirks
     };
@@ -123,8 +124,10 @@ static String buildUserAgentString(const UserAgentQuirks& quirks)
     StringBuilder uaString;
 	
 	//CHB
-	if(quirks.contains(UserAgentQuirks::AugtAltUA))
-	    uaString.appendLiteral("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
+    if(quirks.contains(UserAgentQuirks::AugtAltUA))
+        uaString.appendLiteral("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36");
+    else if(quirks.contains(UserAgentQuirks::AugtAlt2UA))
+        uaString.appendLiteral("Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.90 Safari/537.36");
     else{
 	//eof CHB
 	
@@ -193,13 +196,17 @@ String standardUserAgentForURL(const URL& url)
         quirks.add(UserAgentQuirks::NeedsMacintoshPlatform);
     }
 	//CHB
-	else if (url.string().contains("agent")
-		     || url.string().contains("Agent")
-	         || url.string().contains("browser")
-			 || url.string().contains("Browser")
-             || url.host().endsWith("whatsmyua.info")
-			 ) {
-		 quirks.add(UserAgentQuirks::AugtAltUA);
+    else if (url.string().contains("agent")
+                 || url.string().contains("Agent")
+                 || url.string().contains("browser")
+                 || url.string().contains("Browser")
+                 || url.host().endsWith("whatsmyua.info")
+             ) {
+        quirks.add(UserAgentQuirks::AugtAltUA);
+    } else if (
+               0 
+             ) {
+        quirks.add(UserAgentQuirks::AugtAlt2UA); //can be used later...
     }
 	//eof CHB
 
