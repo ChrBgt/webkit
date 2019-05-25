@@ -124,10 +124,11 @@ static String buildUserAgentString(const UserAgentQuirks& quirks)
     StringBuilder uaString;
 	
 	//CHB
-    if(quirks.contains(UserAgentQuirks::AugtAltUA))
-        uaString.appendLiteral("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36");
+    if(quirks.contains(UserAgentQuirks::AugtAltUA)) //latest Chrome
+        uaString.appendLiteral("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36");
     else if(quirks.contains(UserAgentQuirks::AugtAlt2UA))
-        uaString.appendLiteral("Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.90 Safari/537.36");
+        //uaString.appendLiteral("Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.90 Safari/537.36");
+		uaString.appendLiteral("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Safari/537.36");
     else{
 	//eof CHB
 	
@@ -201,12 +202,44 @@ String standardUserAgentForURL(const URL& url)
                  || url.string().contains("browser")
                  || url.string().contains("Browser")
                  || url.host().endsWith("whatsmyua.info")
+				 || url.string().contains("pinterest")
+				 /*
+				 || url.string().endsWith("welt.de")
+				 || url.host().endsWith("srf.ch")
+				 || url.host().endsWith("radioswisspop.ch")
+			     || url.host().endsWith("radioswissclassic.ch")
+			     || url.host().endsWith("radioswissjazz.ch")
+			     || url.host().endsWith("rts.ch")
+			     || url.host().endsWith("rsi.ch")
+			     || url.host().endsWith("rtr.ch")
+			     || url.host().endsWith("swissinfo.ch")
+			     || url.host().endsWith("srgssr.ch")
+			     || url.host().endsWith("wemfbox.ch")
+			     || url.host().endsWith("chartbeat.com")
+				 */
+				 /*
+				 || url.string().contains("microsoftonline")
+				 || url.host().endsWith("office.com")
+				 || url.host().endsWith("office365.com")
+				 || url.host().endsWith("sharepoint.com")
+				 || url.host().endsWith("aka.ms")
+				 || url.host().endsWith("microsoft.com")
+				 || url.host().endsWith("onenote.com")
+				 || url.host().endsWith("dynamics.com")
+				 || url.string().contains("powerapps")
+				 || url.host().endsWith("microsoftstream.com")
+				 || url.host().endsWith("yammer.com")
+				 || url.host().endsWith("live.com")
+				 || url.host().endsWith("msauth.net")
+				 || url.host().endsWith("msftauth.net")
+				 || url.host().endsWith("microsoftazuread-sso.com")
+				 */
              ) {
         quirks.add(UserAgentQuirks::AugtAltUA);
     } else if (
-               0 
+				0
              ) {
-        quirks.add(UserAgentQuirks::AugtAlt2UA); //can be used later...
+        quirks.add(UserAgentQuirks::AugtAlt2UA);
     }
 	//eof CHB
 
