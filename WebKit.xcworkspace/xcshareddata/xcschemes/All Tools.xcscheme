@@ -4,6 +4,27 @@
    <BuildAction
       parallelizeBuildables = "NO"
       buildImplicitDependencies = "YES">
+<<<<<<< HEAD
+=======
+      <PreActions>
+         <ExecutionAction
+            ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
+            <ActionContent
+               title = "Run Script"
+               scriptText = "&quot;$SRCROOT/../Scripts/copy-webkitlibraries-to-product-directory&quot;">
+               <EnvironmentBuildable>
+                  <BuildableReference
+                     BuildableIdentifier = "primary"
+                     BlueprintIdentifier = "9340994A08540CAE007F3BC8"
+                     BuildableName = "DumpRenderTree"
+                     BlueprintName = "DumpRenderTree"
+                     ReferencedContainer = "container:Tools/DumpRenderTree/DumpRenderTree.xcodeproj">
+                  </BuildableReference>
+               </EnvironmentBuildable>
+            </ActionContent>
+         </ExecutionAction>
+      </PreActions>
+>>>>>>> webkit-2
       <BuildActionEntries>
          <BuildActionEntry
             buildForTesting = "YES"
@@ -13,6 +34,23 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
+<<<<<<< HEAD
+=======
+               BlueprintIdentifier = "9340994A08540CAE007F3BC8"
+               BuildableName = "DumpRenderTree"
+               BlueprintName = "DumpRenderTree"
+               ReferencedContainer = "container:Tools/DumpRenderTree/DumpRenderTree.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+>>>>>>> webkit-2
                BlueprintIdentifier = "A84F608D08B1370600E9745F"
                BuildableName = "All"
                BlueprintName = "All"
@@ -69,15 +107,22 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
+<<<<<<< HEAD
                BlueprintIdentifier = "A18510171B9ADE0B00744AEB"
                BuildableName = "All"
                BlueprintName = "All"
+=======
+               BlueprintIdentifier = "8DD76F960486AA7600D96B5E"
+               BuildableName = "WebKitTestRunner"
+               BlueprintName = "WebKitTestRunner"
+>>>>>>> webkit-2
                ReferencedContainer = "container:Tools/WebKitTestRunner/WebKitTestRunner.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
+<<<<<<< HEAD
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
@@ -98,11 +143,22 @@
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
+=======
+      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
+      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      buildConfiguration = "Debug">
+      <Testables>
+      </Testables>
+   </TestAction>
+   <LaunchAction
+>>>>>>> webkit-2
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
       useCustomWorkingDirectory = "YES"
       customWorkingDirectory = "$(SRCROOT)/../../LayoutTests"
+<<<<<<< HEAD
       ignoresPersistentStateOnLaunch = "YES"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
@@ -116,10 +172,26 @@
             ReferencedContainer = "container:Tools/DumpRenderTree/DumpRenderTree.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
+=======
+      buildConfiguration = "Debug"
+      ignoresPersistentStateOnLaunch = "YES"
+      debugDocumentVersioning = "YES"
+      allowLocationSimulation = "YES">
+      <BuildableProductRunnable>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "9340994A08540CAE007F3BC8"
+            BuildableName = "DumpRenderTree"
+            BlueprintName = "DumpRenderTree"
+            ReferencedContainer = "container:Tools/DumpRenderTree/DumpRenderTree.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
+>>>>>>> webkit-2
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
    <ProfileAction
+<<<<<<< HEAD
       buildConfiguration = "Release"
       shouldUseLaunchSchemeArgsEnv = "YES"
       savedToolIdentifier = ""
@@ -134,6 +206,13 @@
             ReferencedContainer = "container:Tools/DumpRenderTree/DumpRenderTree.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
+=======
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      savedToolIdentifier = ""
+      useCustomWorkingDirectory = "NO"
+      buildConfiguration = "Release"
+      debugDocumentVersioning = "YES">
+>>>>>>> webkit-2
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

@@ -39,7 +39,10 @@
 #include "HeapIterationScope.h"
 #include "HeapProfiler.h"
 #include "HeapSnapshot.h"
-#include "HeapVerifier.h"
+#include "HeapVerifier.h" 
+//CHB   REMOVE!!
+//#include "../tools/HeapVerifier.h"//CHB remove upper include
+//eof CHB
 #include "IncrementalSweeper.h"
 #include "InferredTypeInlines.h"
 #include "InferredValueInlines.h"

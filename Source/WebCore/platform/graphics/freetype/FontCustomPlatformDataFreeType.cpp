@@ -22,7 +22,8 @@
 #include "config.h"
 #include "FontCustomPlatformData.h"
 
-#include "FontPlatformData.h"
+//#include "FontPlatformData.h" CHB
+#include "../FontPlatformData.h" //CHB
 #include "SharedBuffer.h"
 #include <cairo-ft.h>
 #include <cairo.h>

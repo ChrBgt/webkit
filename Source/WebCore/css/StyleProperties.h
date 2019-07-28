@@ -21,7 +21,8 @@
 
 #pragma once
 
-#include "CSSParserMode.h"
+//#include "CSSParserMode.h" CHB
+#include "../parser/CSSParserMode.h" //CHB
 #include "CSSParserTokenRange.h"
 #include "CSSProperty.h"
 #include "CSSValueKeywords.h"

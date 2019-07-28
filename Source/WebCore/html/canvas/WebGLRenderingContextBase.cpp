@@ -445,7 +445,8 @@ std::unique_ptr<WebGLRenderingContextBase> WebGLRenderingContextBase::create(Can
         if (frame->settings().forceSoftwareWebGLRendering())
             attributes.forceSoftwareRenderer = true;
 
-        if (frame->settings().forceWebGLUsesLowPower()) {
+        //if (frame->settings().forceWebGLUsesLowPower()) { CHB
+        if (true) {
             if (attributes.powerPreference == GraphicsContext3DPowerPreference::HighPerformance)
                 LOG(WebGL, "Overriding powerPreference from high-performance to low-power.");
             attributes.powerPreference = GraphicsContext3DPowerPreference::LowPower;

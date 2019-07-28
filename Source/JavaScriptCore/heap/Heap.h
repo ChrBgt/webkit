@@ -50,6 +50,10 @@
 #include <wtf/ParallelHelperPool.h>
 #include <wtf/Threading.h>
 
+//CHB    REMOVE!!
+//#include "HeapOperation.h"
+//eof CHB
+
 namespace JSC {
 
 class CodeBlock;

@@ -5,6 +5,10 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 
 indexedDB = self.indexedDB || self.webkitIndexedDB || self.mozIndexedDB || self.msIndexedDB || self.OIndexedDB;
 
+<<<<<<< HEAD
+=======
+dbname = "transaction-ordering.html"
+>>>>>>> webkit-2
 indexedDB.deleteDatabase(dbname)
 indexedDB.open(dbname)
 

@@ -133,6 +133,7 @@ public:
 
 private:
     static void getSupportedTypes(HashSet<String, ASCIICaseInsensitiveHash>&);
+
     static MediaPlayer::SupportsType supportsType(const MediaEngineSupportParameters&);
 
     static bool isAvailable();
@@ -152,6 +153,7 @@ private:
     void mediaLocationChanged(GstMessage*);
 
     virtual void setDownloadBuffering();
+
     void processBufferingStats(GstMessage*);
 #if ENABLE(VIDEO_TRACK) && USE(GSTREAMER_MPEGTS)
     void processMpegTsSection(GstMpegtsSection*);
@@ -193,6 +195,7 @@ protected:
     GstState m_requestedState;
     bool m_resetPipeline;
     bool m_seeking;
+	bool m_prepareforseeking; //CHB gst/seek (was private)
     bool m_seekIsPending;
     MediaTime m_seekTime;
     GRefPtr<GstElement> m_source;
@@ -244,6 +247,7 @@ private:
     bool m_hasVideo;
     bool m_hasAudio;
     RunLoop::Timer<MediaPlayerPrivateGStreamer> m_readyTimerHandler;
+
     mutable unsigned long long m_totalBytes;
     URL m_url;
     bool m_preservesPitch;
@@ -253,6 +257,7 @@ private:
     GRefPtr<GstElement> m_autoAudioSink;
     GRefPtr<GstElement> m_downloadBuffer;
     Vector<RefPtr<MediaPlayerRequestInstallMissingPluginsCallback>> m_missingPluginCallbacks;
+
 #if ENABLE(VIDEO_TRACK)
     Vector<RefPtr<AudioTrackPrivateGStreamer>> m_audioTracks;
     Vector<RefPtr<InbandTextTrackPrivateGStreamer>> m_textTracks;

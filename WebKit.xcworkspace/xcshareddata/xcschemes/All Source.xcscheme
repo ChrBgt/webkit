@@ -4,6 +4,27 @@
    <BuildAction
       parallelizeBuildables = "NO"
       buildImplicitDependencies = "YES">
+<<<<<<< HEAD
+=======
+      <PreActions>
+         <ExecutionAction
+            ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
+            <ActionContent
+               title = "Run Script"
+               scriptText = "&quot;$SRCROOT/../../Tools/Scripts/copy-webkitlibraries-to-product-directory&quot; --wksi --llvm">
+               <EnvironmentBuildable>
+                  <BuildableReference
+                     BuildableIdentifier = "primary"
+                     BlueprintIdentifier = "5D247B6114689B8600E78B76"
+                     BuildableName = "libWTF.a"
+                     BlueprintName = "WTF"
+                     ReferencedContainer = "container:Source/WTF/WTF.xcodeproj">
+                  </BuildableReference>
+               </EnvironmentBuildable>
+            </ActionContent>
+         </ExecutionAction>
+      </PreActions>
+>>>>>>> webkit-2
       <BuildActionEntries>
          <BuildActionEntry
             buildForTesting = "YES"
@@ -69,6 +90,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
+<<<<<<< HEAD
                BlueprintIdentifier = "FB39D0D01200F0E300088E69"
                BuildableName = "libwebrtc.dylib"
                BlueprintName = "libwebrtc"
@@ -83,6 +105,8 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
+=======
+>>>>>>> webkit-2
                BlueprintIdentifier = "41816F7913859C550057AAA4"
                BuildableName = "All"
                BlueprintName = "All"
@@ -114,7 +138,11 @@
                BlueprintIdentifier = "9398100A0824BF01008DF038"
                BuildableName = "WebKitLegacy.framework"
                BlueprintName = "WebKitLegacy"
+<<<<<<< HEAD
                ReferencedContainer = "container:Source/WebKitLegacy/WebKitLegacy.xcodeproj">
+=======
+               ReferencedContainer = "container:Source/WebKit/WebKit.xcodeproj">
+>>>>>>> webkit-2
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -128,17 +156,28 @@
                BlueprintIdentifier = "1A50DB38110A3C13000D3FE5"
                BuildableName = "All"
                BlueprintName = "All"
+<<<<<<< HEAD
                ReferencedContainer = "container:Source/WebKit/WebKit.xcodeproj">
+=======
+               ReferencedContainer = "container:Source/WebKit2/WebKit2.xcodeproj">
+>>>>>>> webkit-2
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
+<<<<<<< HEAD
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       language = ""
       shouldUseLaunchSchemeArgsEnv = "YES">
+=======
+      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
+      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      buildConfiguration = "Debug">
+>>>>>>> webkit-2
       <Testables>
       </Testables>
       <MacroExpansion>
@@ -150,6 +189,7 @@
             ReferencedContainer = "container:Tools/MiniBrowser/MiniBrowser.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
+<<<<<<< HEAD
       <AdditionalOptions>
       </AdditionalOptions>
    </TestAction>
@@ -166,6 +206,19 @@
       allowLocationSimulation = "YES">
       <BuildableProductRunnable
          runnableDebuggingMode = "0">
+=======
+   </TestAction>
+   <LaunchAction
+      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
+      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+      launchStyle = "0"
+      useCustomWorkingDirectory = "NO"
+      buildConfiguration = "Debug"
+      ignoresPersistentStateOnLaunch = "YES"
+      debugDocumentVersioning = "YES"
+      allowLocationSimulation = "YES">
+      <BuildableProductRunnable>
+>>>>>>> webkit-2
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "8D1107260486CEB800E47090"
@@ -178,6 +231,7 @@
       </AdditionalOptions>
    </LaunchAction>
    <ProfileAction
+<<<<<<< HEAD
       buildConfiguration = "Release"
       shouldUseLaunchSchemeArgsEnv = "YES"
       savedToolIdentifier = ""
@@ -192,6 +246,13 @@
             ReferencedContainer = "container:Source/bmalloc/bmalloc.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
+=======
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      savedToolIdentifier = ""
+      useCustomWorkingDirectory = "NO"
+      buildConfiguration = "Release"
+      debugDocumentVersioning = "YES">
+>>>>>>> webkit-2
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

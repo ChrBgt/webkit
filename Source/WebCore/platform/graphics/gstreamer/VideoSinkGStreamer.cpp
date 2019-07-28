@@ -59,6 +59,10 @@ GST_DEBUG_CATEGORY_STATIC(webkitVideoSinkDebug);
 enum {
     REPAINT_REQUESTED,
     REPAINT_CANCELLED,
+//CHB test
+//#define GST_DEBUG_OBJECT(src, ...) g_printerr("CHB src " __VA_ARGS__);g_printerr("\n")
+//#define GST_ERROR_OBJECT(src, ...) g_printerr("CHB src " __VA_ARGS__);g_printerr("\n")
+//eof CHB test
     LAST_SIGNAL
 };
 
@@ -176,6 +180,9 @@ static GstFlowReturn webkitVideoSinkRender(GstBaseSink* baseSink, GstBuffer* buf
 {
     WebKitVideoSink* sink = WEBKIT_VIDEO_SINK(baseSink);
     return sink->priv->scheduler.requestRender(sink, buffer) ? GST_FLOW_OK : GST_FLOW_ERROR;
+
+	//g_object_set (GST_BASE_SINK(sink), "sync", TRUE, NULL); //CHB test --> problematic with livestream
+	//g_object_set (GST_BASE_SINK(sink), "async", FALSE, NULL); //CHB test --> problematic with livestream
 }
 
 static void webkitVideoSinkFinalize(GObject* object)

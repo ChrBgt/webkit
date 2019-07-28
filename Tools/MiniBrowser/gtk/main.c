@@ -73,10 +73,10 @@ static WebKitWebView *createBrowserTab(BrowserWindow *window, WebKitSettings *we
         "user-content-manager", userContentManager,
         "is-controlled-by-automation", automationMode,
         NULL));
-
+	/*CHB
     if (editorMode)
         webkit_web_view_set_editable(webView, TRUE);
-
+	*/
     browser_window_append_view(window, webView);
     return webView;
 }
@@ -439,7 +439,8 @@ static void aboutURISchemeRequestCallback(WebKitURISchemeRequest *request, WebKi
 
     path = webkit_uri_scheme_request_get_path(request);
     if (!g_strcmp0(path, "minibrowser")) {
-        contents = g_strdup_printf("<html><body><h1>WebKitGTK+ MiniBrowser</h1><p>The WebKit2 test browser of the GTK+ port.</p><p>WebKit version: %d.%d.%d</p></body></html>",
+        //contents = g_strdup_printf("<html><body><h1>WebKitGTK+ MiniBrowser</h1><p>The WebKit2 test browser of the GTK+ port.</p><p>WebKit version: %d.%d.%d</p></body></html>",  CHB
+        contents = g_strdup_printf("<html><body><h1>augtention.com</h1><p>Server side web browsing</p><p>Used WebKit version: %d.%d.%d</p></body></html>",     //CHB		
             webkit_get_major_version(),
             webkit_get_minor_version(),
             webkit_get_micro_version());
@@ -474,6 +475,8 @@ static void automationStartedCallback(WebKitWebContext *webContext, WebKitAutoma
 
 int main(int argc, char *argv[])
 {
+	WebKitCookieManager *cmger; //CHB
+
 #if ENABLE_DEVELOPER_MODE
     g_setenv("WEBKIT_INJECTED_BUNDLE_PATH", WEBKIT_INJECTED_BUNDLE_PATH, FALSE);
 #endif
@@ -485,6 +488,10 @@ int main(int argc, char *argv[])
     g_option_context_add_group(context, gtk_get_option_group(TRUE));
 
     WebKitSettings *webkitSettings = webkit_settings_new();
+	//CHB
+    webkit_settings_set_enable_smooth_scrolling(webkitSettings, TRUE);
+	webkit_settings_set_enable_plugins(webkitSettings, TRUE); //sollte eigentlich eh der Fall sein...
+	//eof CHB
     webkit_settings_set_enable_developer_extras(webkitSettings, TRUE);
     webkit_settings_set_enable_webgl(webkitSettings, TRUE);
     webkit_settings_set_enable_media_stream(webkitSettings, TRUE);
@@ -509,10 +516,14 @@ int main(int argc, char *argv[])
         webkit_network_proxy_settings_free(webkitProxySettings);
     }
 
+	/* CHB
     const gchar *singleprocess = g_getenv("MINIBROWSER_SINGLEPROCESS");
     webkit_web_context_set_process_model(webContext, (singleprocess && *singleprocess) ?
         WEBKIT_PROCESS_MODEL_SHARED_SECONDARY_PROCESS : WEBKIT_PROCESS_MODEL_MULTIPLE_SECONDARY_PROCESSES);
-
+	*/
+    webkit_web_context_set_process_model(webkit_web_context_get_default(), WEBKIT_PROCESS_MODEL_MULTIPLE_SECONDARY_PROCESSES); //CHB
+    webkit_web_context_set_cache_model (webkit_web_context_get_default(), WEBKIT_CACHE_MODEL_DOCUMENT_BROWSER); //CHB  inserted, we could also use WEBKIT_CACHE_MODEL_DOCUMENT_VIEWER (no caching)
+	
     // Enable the favicon database, by specifying the default directory.
     webkit_web_context_set_favicon_database_directory(webContext, NULL);
 

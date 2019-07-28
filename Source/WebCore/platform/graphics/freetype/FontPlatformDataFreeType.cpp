@@ -23,7 +23,8 @@
  */
 
 #include "config.h"
-#include "FontPlatformData.h"
+//#include "FontPlatformData.h" CHB
+#include "../FontPlatformData.h" //CHB
 
 #include "CairoUniquePtr.h"
 #include "CairoUtilities.h"
