@@ -47,6 +47,6 @@ void webkitWebContextWebViewDestroyed(WebKitWebContext*, WebKitWebView*);
 WebKitWebView* webkitWebContextGetWebViewForPage(WebKitWebContext*, WebKit::WebPageProxy*);
 GVariant* webkitWebContextInitializeWebExtensions(WebKitWebContext*);
 void webkitWebContextInitializeNotificationPermissions(WebKitWebContext*);
-#if ENABLE(REMOTE_INSPECTOR)
+//#if ENABLE(REMOTE_INSPECTOR)  CHB
 void webkitWebContextWillCloseAutomationSession(WebKitWebContext*);
-#endif
+//#endif   CHB

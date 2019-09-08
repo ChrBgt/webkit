@@ -909,8 +909,8 @@ static void browser_window_init(BrowserWindow *window)
     windowList = g_list_append(windowList, window);
 
     gtk_window_set_title(GTK_WINDOW(window), defaultWindowTitle);
-    gtk_window_set_default_size(GTK_WINDOW(window), 1000, 500); //CHB 800, 600);
-	gtk_widget_set_size_request(GTK_WIDGET(window), 1000, 500);//CHB
+    gtk_window_set_default_size(GTK_WINDOW(window), 960, 712); //CHB 800, 600);
+	gtk_widget_set_size_request(GTK_WIDGET(window), 960, 712);//CHB
 	gtk_window_set_resizable(GTK_WINDOW(window), FALSE); //CHB
 	gtk_window_set_deletable(GTK_WINDOW(window), FALSE); //CHB
 	gtk_window_set_type_hint(GTK_WINDOW(window), GDK_WINDOW_TYPE_HINT_MENU); //CHB

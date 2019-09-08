@@ -31,7 +31,7 @@
 
 #pragma once
 
-#include "./../page/csp/ContentSecurityPolicy.h" //CHB ./../page/csp/ added
+#include "ContentSecurityPolicy.h"
 #include "CrossOriginPreflightChecker.h"
 #include "ResourceResponse.h"
 #include "SecurityOrigin.h"

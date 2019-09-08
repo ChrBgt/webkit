@@ -31,7 +31,7 @@
 #include <wtf/HashMap.h>
 #include <wtf/RetainPtr.h>
 #include <wtf/text/WTFString.h>
-
+/*CHB
 #if PLATFORM(MAC)
 OBJC_CLASS NSURL;
 OBJC_CLASS NSWindow;
@@ -126,3 +126,4 @@ private:
 };
 
 } // namespace WebKit
+CHB*/

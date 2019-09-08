@@ -194,7 +194,9 @@ struct _WebKitWebContextPrivate {
 #endif
     std::unique_ptr<WebKitAutomationClient> automationClient;
     GRefPtr<WebKitAutomationSession> automationSession;
-#endif
+#endif //CHB
+    GRefPtr<WebKitAutomationSession> automationSession;
+//#endif   CHB moved upwards
 };
 
 static guint signals[LAST_SIGNAL] = { 0, };
@@ -242,13 +244,14 @@ private:
 
     WebKitWebContext* m_webContext;
 };
+#endif // ENABLE(REMOTE_INSPECTOR)    CHB
 
 void webkitWebContextWillCloseAutomationSession(WebKitWebContext* webContext)
 {
     webContext->priv->processPool->setAutomationSession(nullptr);
     webContext->priv->automationSession = nullptr;
 }
-#endif // ENABLE(REMOTE_INSPECTOR)
+//#endif // ENABLE(REMOTE_INSPECTOR)    CHB: moved to above
 
 WEBKIT_DEFINE_TYPE(WebKitWebContext, webkit_web_context, G_TYPE_OBJECT)
 

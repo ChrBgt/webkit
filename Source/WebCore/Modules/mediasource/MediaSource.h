@@ -39,20 +39,6 @@
 #include "MediaSourcePrivateClient.h"
 #include "URLRegistry.h"
 
-/*
-#include "GenericEventQueue.h"
-#include "MediaSourcePrivate.h"
-#include "MediaSourcePrivateClient.h"
-#include "ScriptWrappable.h"
-#include "SourceBuffer.h"
-#include "SourceBufferList.h"
-#include <wtf/RefCounted.h>
-#include <wtf/Vector.h>
-*/
-#include "MediaSourcePrivate.h"
-#include "MediaSourcePrivateClient.h"
-
-
 namespace WebCore {
 
 class ContentType;

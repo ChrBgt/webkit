@@ -25,7 +25,7 @@
 
 #include "config.h"
 #include "RemoteWebInspectorProxy.h"
-
+/*CHB
 #include "RemoteWebInspectorProxyMessages.h"
 #include "RemoteWebInspectorUIMessages.h"
 #include "WebInspectorProxy.h"
@@ -164,3 +164,4 @@ void RemoteWebInspectorProxy::platformCloseFrontendPageAndWindow() { }
 #endif
 
 } // namespace WebKit
+CHB*/

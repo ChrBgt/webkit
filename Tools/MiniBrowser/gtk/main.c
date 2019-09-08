@@ -490,7 +490,9 @@ int main(int argc, char *argv[])
     WebKitSettings *webkitSettings = webkit_settings_new();
 	//CHB
     webkit_settings_set_enable_smooth_scrolling(webkitSettings, TRUE);
-	webkit_settings_set_enable_plugins(webkitSettings, TRUE); //sollte eigentlich eh der Fall sein...
+    webkit_settings_set_enable_plugins(webkitSettings, TRUE); //sollte eigentlich eh der Fall sein...
+    webkit_settings_set_enable_encrypted_media(webkitSettings, TRUE);
+	/*webkit_settings_set_user_agent(webkitSettings, "Mozilla/5.0 AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.0 Safari/605.1.15");*/
 	//eof CHB
     webkit_settings_set_enable_developer_extras(webkitSettings, TRUE);
     webkit_settings_set_enable_webgl(webkitSettings, TRUE);

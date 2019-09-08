@@ -29,8 +29,7 @@
 #include "CachedResource.h"
 #include "CachedResourceHandle.h"
 #include "CachedResourceRequest.h"
-//#include "ContentSecurityPolicy.h" CHB
-#include "./../page/csp/ContentSecurityPolicy.h" //CHB
+#include "ContentSecurityPolicy.h"
 #include "KeepaliveRequestTracker.h"
 #include "ResourceTimingInformation.h"
 #include "Timer.h"

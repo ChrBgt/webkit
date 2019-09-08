@@ -146,7 +146,7 @@ static void browser_download_init(BrowserDownload *download)
     gtk_widget_show(statusBox);
 
     download->statusLabel = gtk_label_new("Starting Download");
-    gtk_label_set_max_width_chars(GTK_LABEL(download->statusLabel), 30);//CHB inserted   TODO 30 fits well for width=1000, should eventually depend on window width/(max char width in pixel)
+    gtk_label_set_max_width_chars(GTK_LABEL(download->statusLabel), 30);//CHB inserted   TODO 30 fits well for width=960, should eventually depend on window width/(max char width in pixel)
     gtk_label_set_ellipsize(GTK_LABEL(download->statusLabel), PANGO_ELLIPSIZE_END);
     gtk_misc_set_alignment(GTK_MISC(download->statusLabel), 0., 0.5);
     gtk_box_pack_start(GTK_BOX(statusBox), download->statusLabel, TRUE, TRUE, 0);
