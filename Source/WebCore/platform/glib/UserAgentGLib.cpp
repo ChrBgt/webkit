@@ -78,6 +78,7 @@ static inline const char* versionForUAString()
 static String buildUserAgentString(const UserAgentQuirks& quirks)
 {
     StringBuilder uaString;
+	if(0) { // CHB
     uaString.appendLiteral("Mozilla/5.0 ");
     uaString.append('(');
 
@@ -105,7 +106,10 @@ static String buildUserAgentString(const UserAgentQuirks& quirks)
     // https://bugs.webkit.org/show_bug.cgi?id=133403 for details.
     uaString.appendLiteral("Version/11.0 Safari/");
     uaString.append(versionForUAString());
-
+	} else // CHB 
+	uaString.appendLiteral("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13 Safari/605.1.15");//CHB akamai image mger works with that UA, so use that in general (as long as no other conflicts pop up)
+	//g_printerr("UA: %s", uaString.toString().utf8().data());//CHB test
+	
     return uaString.toString();
 }
 

@@ -181,7 +181,7 @@ static void downloadReceivedResponse(WebKitDownload *download, GParamSpec *param
     browserDownload->contentLength = webkit_uri_response_get_content_length(response);
     char *text = g_strdup_printf("Downloading %s", webkit_uri_response_get_uri(response));
     //CHB
-	char *newdest = g_strdup_printf("file:///home/cb/downloads%s", strrchr(text, (int)('/')));
+	char *newdest = g_strdup_printf("file:///tmp/downloads%s", strrchr(text, (int)('/')));
 	webkit_download_set_destination(download, newdest);
 	g_free(newdest);
 	//eof CHB
@@ -235,7 +235,7 @@ static void downloadReceivedData(WebKitDownload *download, guint64 dataLength, B
 static void downloadFinished(WebKitDownload *download, BrowserDownload *browserDownload)
 {
     gchar *text = g_strdup_printf("Download completed: %s", webkit_download_get_destination(download)
-	+ strlen("file:///home/cb/") //CHB added
+	+ strlen("file:///tmp/") //CHB added
 	);
     gtk_label_set_text(GTK_LABEL(browserDownload->statusLabel), text);
     g_free(text);
