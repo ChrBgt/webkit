@@ -824,7 +824,6 @@ void DocumentLoader::continueAfterContentPolicy(PolicyAction policy)
 
     switch (policy) {
     case PolicyAction::Use: {
-g_printerr("PolicyAction::Use  %s\n", m_response.mimeType());//CHB test
         // Prevent remote web archives from loading because they can claim to be from any domain and thus avoid cross-domain security checks (4120255).
         if (!frameLoader()->client().canShowMIMEType(m_response.mimeType()) || isRemoteWebArchive(*this)) {
             frameLoader()->policyChecker().cannotShowMIMEType(m_response);
@@ -836,7 +835,6 @@ g_printerr("PolicyAction::Use  %s\n", m_response.mimeType());//CHB test
     }
 
     case PolicyAction::Download: {
-g_printerr("PolicyAction::Download  %s\n", m_response.mimeType());//CHB test
         // m_mainResource can be null, e.g. when loading a substitute resource from application cache.
         if (!m_mainResource) {
             mainReceivedError(frameLoader()->client().cannotShowURLError(m_request));
@@ -866,7 +864,6 @@ g_printerr("PolicyAction::Download  %s\n", m_response.mimeType());//CHB test
         return;
     }
     case PolicyAction::Ignore:
-g_printerr("PolicyAction::Ignore  %s\n", m_response.mimeType());//CHB test
         if (ResourceLoader* mainResourceLoader = this->mainResourceLoader())
             InspectorInstrumentation::continueWithPolicyIgnore(*m_frame, mainResourceLoader->identifier(), *this, m_response);
         stopLoadingForPolicyChange();

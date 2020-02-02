@@ -2290,7 +2290,7 @@ void webkitWebViewExitFullScreen(WebKitWebView* webView)
 void webkitWebViewRunFileChooserRequest(WebKitWebView* webView, WebKitFileChooserRequest* request)
 {
     gboolean returnValue;
-    g_signal_emit(webView, signals[RUN_FILE_CHOOSER], 0, request, &returnValue);
+    //g_signal_emit(webView, signals[RUN_FILE_CHOOSER], 0, request, &returnValue); CHB
 }
 
 #if PLATFORM(GTK)
