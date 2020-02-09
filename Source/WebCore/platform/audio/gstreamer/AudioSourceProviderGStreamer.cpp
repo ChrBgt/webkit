@@ -117,17 +117,6 @@ void AudioSourceProviderGStreamer::configureAudioBin(GstElement* audioBin, GstEl
     m_audioSinkBin = audioBin;
 
     GstElement* audioTee = gst_element_factory_make("tee", "audioTee");
-/* CHB the original   REMOVE !!
-    GstElement* audioQueue = gst_element_factory_make("queue", nullptr);
-    GstElement* audioConvert = gst_element_factory_make("audioconvert", nullptr);
-    GstElement* audioConvert2 = gst_element_factory_make("audioconvert", nullptr);
-    GstElement* audioResample = gst_element_factory_make("audioresample", nullptr);
-    GstElement* audioResample2 = gst_element_factory_make("audioresample", nullptr);
-    GstElement* volumeElement = gst_element_factory_make("volume", "volume");
-    GstElement* audioSink = gst_element_factory_make("autoaudiosink", nullptr);
-
-    gst_bin_add_many(GST_BIN(m_audioSinkBin.get()), audioTee, audioQueue, audioConvert, audioResample, volumeElement, audioConvert2, audioResample2, audioSink, nullptr);
-*/
     GstElement* audioQueue = gst_element_factory_make("queue2", nullptr); //CHB queue2 instead of queue
     GstElement* audioConvert = gst_element_factory_make("audioconvert", nullptr);
     GstElement* audioConvert2 = gst_element_factory_make("audioconvert", nullptr);
@@ -136,9 +125,9 @@ void AudioSourceProviderGStreamer::configureAudioBin(GstElement* audioBin, GstEl
     GstElement* volumeElement = gst_element_factory_make("volume", "volume");
     //GstElement* audioSink = gst_element_factory_make("autoaudiosink", nullptr);  CHB
 
-	//CHB testing
-	//...gst_element_factory_make("fakesink", 0); //CHB
-	//g_object_set (audioSink, "dump", TRUE, NULL); //CHB	
+    //CHB testing
+    //...gst_element_factory_make("fakesink", 0); //CHB
+    //g_object_set (audioSink, "dump", TRUE, NULL); //CHB	
 	
     //CHB
     GstElement* audioSink = gst_element_factory_make("filesink", 0);
@@ -153,14 +142,14 @@ void AudioSourceProviderGStreamer::configureAudioBin(GstElement* audioBin, GstEl
 	
     gst_bin_add_many(GST_BIN(m_audioSinkBin.get()), audioTee, audioQueue, gstidentity, audioConvert, audioResample, 
 	                 volumeElement, audioConvert2, audioResample2, audioSink, nullptr);
-																	//CHB gstidentity added
+                                                                                //CHB gstidentity added
     //CHB
 	GstCaps* caps = gst_caps_new_simple("audio/x-raw", "rate", G_TYPE_INT, 22050,
                                         "channels", G_TYPE_INT, 2,
                                         "format", G_TYPE_STRING, GST_AUDIO_NE(S32),
                                         "layout", G_TYPE_STRING, "interleaved", nullptr);	
 	
-	//eof CHB
+    //eof CHB
 																
     // In cases where the audio-sink needs elements before tee (such
     // as scaletempo) they need to be linked to tee which in this case
@@ -179,11 +168,6 @@ void AudioSourceProviderGStreamer::configureAudioBin(GstElement* audioBin, GstEl
     // autoaudiosink. The audioresample and audioconvert are needed to
     // ensure the audio sink receives buffers in the correct format.
     gst_element_link_pads_full(audioTee, "src_%u", audioQueue, "sink", GST_PAD_LINK_CHECK_NOTHING);
-
-	/* CHB original   REMOVE !!
-    gst_element_link_pads_full(audioQueue, "src", audioConvert, "sink", GST_PAD_LINK_CHECK_NOTHING);
-	*/
-
     gst_element_link_pads_full(audioQueue, "src", gstidentity, "sink", GST_PAD_LINK_CHECK_NOTHING); //CHB
     //gst_element_link_pads_full(audioQueue, "src", audioConvert, "sink", GST_PAD_LINK_CHECK_NOTHING); CHB
     gst_element_link_pads_full(gstidentity, "src", audioConvert, "sink", GST_PAD_LINK_CHECK_NOTHING); //CHB
@@ -192,9 +176,6 @@ void AudioSourceProviderGStreamer::configureAudioBin(GstElement* audioBin, GstEl
     gst_element_link_pads_full(audioResample, "src", volumeElement, "sink", GST_PAD_LINK_CHECK_NOTHING);
     gst_element_link_pads_full(volumeElement, "src", audioConvert2, "sink", GST_PAD_LINK_CHECK_NOTHING);
     gst_element_link_pads_full(audioConvert2, "src", audioResample2, "sink", GST_PAD_LINK_CHECK_NOTHING);
-
-	/* CHB original   REMOVE!!
-    gst_element_link_pads_full(audioResample2, "src", audioSink, "sink", GST_PAD_LINK_CHECK_NOTHING);*/
 
     //gst_element_link_pads_full(audioResample2, "src", audioSink, "sink", GST_PAD_LINK_CHECK_NOTHING); CHB
     gst_element_link_pads_filtered(audioResample2, "src", audioSink, "sink", caps); // CHB	
