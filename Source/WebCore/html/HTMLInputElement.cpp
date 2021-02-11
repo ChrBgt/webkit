@@ -511,9 +511,9 @@ void HTMLInputElement::updateType()
 
     setNeedsWillValidateCheck();
 
-    if (!didStoreValue && willStoreValue)
+    if (!didStoreValue && willStoreValue){
         m_valueIfDirty = sanitizeValue(attributeWithoutSynchronization(valueAttr));
-    else
+    }else
         updateValueIfNeeded();
 
     setFormControlValueMatchesRenderer(false);

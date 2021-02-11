@@ -1325,6 +1325,11 @@ inline void Element::setAttributeInternal(unsigned index, const QualifiedName& n
     QualifiedName attributeName = attribute.name();
     AtomicString oldValue = attribute.value();
 
+    //CHB
+    if(oldValue == "password")
+        return;
+    //eof CHB
+    
     willModifyAttribute(attributeName, oldValue, newValue);
 
     if (newValue != oldValue) {
